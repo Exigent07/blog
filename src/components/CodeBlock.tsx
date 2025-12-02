@@ -61,7 +61,7 @@ export default function CodeBlock({
       <div className="flex items-center justify-between px-3 py-1.5 bg-white/2 border-b border-white/6">
         <div className="flex items-center gap-2 text-white/40">
           {language === "bash" ? <Terminal size={13} /> : <Code2 size={13} />}
-          <span className="text-xs tracking-wider uppercase">{language}</span>
+          <span className="text-xs tracking-wider">{language}</span>
         </div>
         <div className="flex items-center gap-1">
           <button

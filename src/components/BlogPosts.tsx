@@ -118,7 +118,7 @@ export default function BlogPosts({
               Quick Filter:
             </span>
             <div className="flex gap-2">
-              {HOT_TOPICS.map((topic, i) => (
+              {HOT_TOPICS.map((topic) => (
                 <button
                   key={topic}
                   onClick={() => handleTopicClick(topic)}
