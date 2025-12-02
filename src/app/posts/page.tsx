@@ -1,5 +1,12 @@
 import { getAllPosts, getUniqueTags, getUniqueCategories, getUniqueYears } from "@/lib/posts";
-import ClientPageWrapper from "./ClientPageWrapper"
+import ClientPageWrapper from "./ClientPageWrapper";
+import { Suspense } from "react";
+import Loading from "@/components/LoadingScreen";
+
+export const metadata = {
+  title: "All Posts | Exigent07",
+  description: "Browse all security research articles and CTF writeups.",
+};
 
 export default function Page() {
   const posts = getAllPosts();
@@ -9,11 +16,13 @@ export default function Page() {
   const years = getUniqueYears();
 
   return (
-    <ClientPageWrapper 
-      posts={posts} 
-      availableTags={tags}
-      availableCategories={categories}
-      availableYears={years}
-    />
+    <Suspense fallback={<Loading />}>
+      <ClientPageWrapper 
+        posts={posts} 
+        availableTags={tags}
+        availableCategories={categories}
+        availableYears={years}
+      />
+    </Suspense>
   );
 }
