@@ -41,11 +41,13 @@ export default function CodeBlock({
 
     try {
       const result = await explainCode(children, language);
-      
+
       if (result) {
         setExplanation(result);
       } else {
-        setExplanation("Could not generate an explanation at this time. (API Error or Limit)");
+        setExplanation(
+          "Could not generate an explanation at this time. (API Error or Limit)"
+        );
       }
     } catch (error) {
       setExplanation("Error connecting to AI service.");
@@ -66,14 +68,16 @@ export default function CodeBlock({
             onClick={handleExplain}
             disabled={isExplaining}
             className={`p-1 rounded hover:bg-white/10 transition-colors ${
-              showExplain ? "text-purple-400 bg-white/5" : "text-white/50 hover:text-white/80"
+              showExplain
+                ? "text-purple-400 bg-white/5"
+                : "text-white/50 hover:text-white/80"
             }`}
             title="Explain with AI"
           >
             {isExplaining ? (
-               <Loader2 size={13} className="animate-spin" />
+              <Loader2 size={13} className="animate-spin" />
             ) : (
-               <Sparkles size={13} />
+              <Sparkles size={13} />
             )}
           </button>
           <button
@@ -106,7 +110,7 @@ export default function CodeBlock({
           </button>
         </div>
       </div>
-      
+
       <SyntaxHighlighter
         language={language}
         style={vscDarkPlus}
@@ -119,7 +123,7 @@ export default function CodeBlock({
       >
         {children}
       </SyntaxHighlighter>
-      
+
       <AnimatePresence>
         {showExplain && (
           <motion.div
@@ -133,14 +137,13 @@ export default function CodeBlock({
                 <Sparkles size={10} />
                 AI Explanation
               </div>
-              
+
               {isExplaining ? (
                 <div className="flex items-center gap-2 text-white/40">
-                   <span className="animate-pulse">Thinking...</span>
+                  <span className="animate-pulse">Thinking...</span>
                 </div>
               ) : (
-                // Use ReactMarkdown for clean rendering of the AI's markdown response
-                <div className="prose prose-invert prose-sm max-w-none [&>p]:mb-2 [&>p:last-child]:mb-0">
+                <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap wrap-break-word [&>p]:mb-2 [&>p:last-child]:mb-0">
                   <ReactMarkdown>{explanation}</ReactMarkdown>
                 </div>
               )}

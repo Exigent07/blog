@@ -2,6 +2,8 @@ import { getPostBySlug, getAllPosts, getSimilarPosts } from "@/lib/posts";
 import { notFound } from "next/navigation";
 import ClientPageWrapper from "./ClientPageWrapper";
 import { Metadata } from "next";
+import { Suspense } from "react";
+import Loading from "@/components/LoadingScreen";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -14,41 +16,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = getPostBySlug(decodeURIComponent(slug));
 
-  if (!post) {
-    return {
-      title: "Post Not Found",
-    };
-  }
-
-  const ogImage = "/og-image.png";
-  const publishedTime = new Date(post.date).toISOString();
+  if (!post) return { title: "Post Not Found" };
 
   return {
     title: post.title,
-    description: post.excerpt || post.content.substring(0, 160),
-    keywords: post.tags,
-    authors: [{ name: "Exigent07" }],
+    description: post.excerpt,
     openGraph: {
       title: post.title,
-      description: post.excerpt || post.content.substring(0, 160),
+      description: post.excerpt,
       type: "article",
-      publishedTime,
-      url: `https://exigent07.com/posts/${post.slug}`,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-      tags: post.tags,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.excerpt || post.content.substring(0, 160),
-      images: [ogImage],
+      images: ["/og-image.png"],
     },
   };
 }
@@ -65,21 +42,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
+    "@type": "BlogPosting",
     headline: post.title,
-    description: post.excerpt || post.content.substring(0, 160),
-    image: ["https://exigent07.com/og-image.png"],
-    datePublished: new Date(post.date).toISOString(),
+    description: post.excerpt,
+    datePublished: post.date,
     author: {
       "@type": "Person",
       name: "Exigent07",
-      url: "https://exigent07.com",
-    },
-    keywords: post.tags.join(", "),
-    articleSection: post.category,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://exigent07.com/posts/${post.slug}`,
     },
   };
 
@@ -89,8 +58,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
-      <ClientPageWrapper post={post} similarPosts={similarPosts} />
+
+      <Suspense fallback={<Loading />}>
+        <ClientPageWrapper post={post} similarPosts={similarPosts} />
+      </Suspense>
     </>
   );
 }
