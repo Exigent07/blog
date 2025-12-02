@@ -1,0 +1,28 @@
+{
+  "name": "Exigent Blog",
+  "short_name": "Exigent Blog",
+  "description": "I'm Aravindh. I kind of hate security, but it pays well, so here I am — doing CTFs, finding bugs, and sharing whatever I learn along the way.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
