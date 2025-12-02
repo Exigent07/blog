@@ -21,6 +21,7 @@ export default function BlogCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const openRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const currentPage = typeof window !== "undefined" ? window.location.pathname : "";
 
   const [mousePercent, setMousePercent] = useState({ x: 50, y: 50 });
 
@@ -31,13 +32,13 @@ export default function BlogCard({
       onExitSelectionMode?.();
     } else {
       if (post === null) return;
-      router.push(`/posts/${encodeURIComponent(post.title)}?from=posts`);
+      router.push(`/posts/${encodeURIComponent(post.title)}?from=${encodeURIComponent(currentPage)}`);
     }
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `/posts/${encodeURIComponent(post.title)}?from=posts`;
+    const url = `/posts/${encodeURIComponent(post.title)}?from=${encodeURIComponent(currentPage)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
