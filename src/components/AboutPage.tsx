@@ -7,12 +7,19 @@ import CreativeButton from "@/components/CreativeButton";
 import PageTitle from "@/components/PageTitle";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import { FaXTwitter, FaDiscord, FaBluesky } from "react-icons/fa6";
+import { SiBugcrowd, SiHackerone, SiGoogle } from "react-icons/si";
 
 export function AboutPage() {
   const achievements = [
     { icon: Trophy, title: "CTF Player", description: "Active participant in Capture The Flag competitions" },
     { icon: Shield, title: "Bug Bounty Hunter", description: "Finding and reporting security vulnerabilities" },
     { icon: Code2, title: "Full-Stack Developer", description: "Building modern web applications" },
+  ];
+
+  const bugPlatforms = [
+    { icon: SiBugcrowd, label: "Bugcrowd", href: "https://bugcrowd.com/h/exigent07", handle: "Exigent07" },
+    { icon: SiHackerone, label: "HackerOne", href: "https://hackerone.com/exigent07", handle: "Exigent07" },
+    { icon: SiGoogle, label: "Google Bug Hunters", href: "https://bughunters.google.com/profile/4721fa3e-45eb-417b-b86b-c7b0961ed033", handle: "Exigent07" },
   ];
 
   const socials = [
@@ -115,6 +122,43 @@ export function AboutPage() {
                     <h3 className="text-white/80 mb-2">{achievement.title}</h3>
                     <p className="text-white/50 text-sm">{achievement.description}</p>
                   </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
+          className="mb-20"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {bugPlatforms.map((platform, index) => {
+              const Icon = platform.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 + index * 0.05 }}
+                  className="group relative flex items-center justify-between p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20 transition-all duration-500 cursor-pointer"
+                  onClick={() => window.open(platform.href, '_blank')}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center group-hover:border-white/30 group-hover:bg-white/10 transition-all duration-500">
+                      <Icon size={20} className="text-white/60 group-hover:text-white/80 transition-colors duration-500" />
+                    </div>
+                    <div>
+                      <div className="text-white/80 text-sm mb-1">{platform.label}</div>
+                      <div className="text-white/50 text-xs font-mono">{platform.handle}</div>
+                    </div>
+                  </div>
+                  <ArrowUpRight 
+                    size={16} 
+                    className="text-white/40 group-hover:text-white/60 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" 
+                  />
                 </motion.div>
               );
             })}
