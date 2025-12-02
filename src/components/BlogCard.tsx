@@ -1,7 +1,7 @@
 import CardButton from "@/components/CardButton";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { PostData } from "@/lib/posts";
 
 export default function BlogCard({
@@ -21,7 +21,7 @@ export default function BlogCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const openRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const currentPage = typeof window !== "undefined" ? window.location.pathname : "";
+  const currentPage = usePathname();
 
   const [mousePercent, setMousePercent] = useState({ x: 50, y: 50 });
 

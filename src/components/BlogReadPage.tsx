@@ -58,7 +58,7 @@ export function BlogReadPage({
   const shareURL = typeof window !== "undefined" ? window.location.href : "";
 
   const handleBackClick = () =>
-    referrer === "posts" ? router.push("/posts") : router.push("/");
+    referrer === "/posts" ? router.push("/posts") : router.push("/");
 
   const handleTagClick = (tag: string) =>
     router.push(`/posts?q=tag:${encodeURIComponent(tag)}`);
