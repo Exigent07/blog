@@ -49,6 +49,7 @@ export default function CodeBlock({
           "Could not generate an explanation at this time. (API Error or Limit)"
         );
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setExplanation("Error connecting to AI service.");
     } finally {

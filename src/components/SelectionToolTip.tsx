@@ -50,6 +50,7 @@ export default function SelectionTooltip({
       } else {
         setExplanation("Could not generate explanation.");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setExplanation("Failed to connect to AI.");
     } finally {
