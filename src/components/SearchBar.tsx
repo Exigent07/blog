@@ -13,8 +13,8 @@ import {
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { LucideIcon } from "lucide-react";
-import { toast } from "sonner"; // Import Sonner
-import { generateSmartSearch } from "@/app/actions"; // Your AI Server Action
+import { toast } from "sonner";
+import { generateSmartSearch } from "@/app/actions";
 
 interface SearchBarProps {
   onTagClick?: (tag: string) => void;
@@ -28,13 +28,11 @@ interface SearchBarProps {
 
 const availableReadTimes = ["<5 min", "5-10 min", ">10 min"];
 
-// Helper: Split query respecting quotes
 const splitQuery = (str: string): string[] => {
   const match = str.match(/(?:[^\s"]+|"[^"]*")+/g);
   return match ? Array.from(match) : [];
 };
 
-// Helper: Determine if value needs quotes (spaces, <, >, -)
 const needsQuotes = (val: string) => {
   return (
     val.includes(" ") ||
@@ -184,14 +182,12 @@ export default function SearchBar({
     updateCursorOffset();
   }, [updateCursorOffset]);
 
-  // Check if user has manually typed an operator
   const hasOperator =
     query.includes("tag:") ||
     query.includes("category:") ||
     query.includes("year:") ||
     query.includes("readtime:");
 
-  // --- AI LOGIC ---
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (aiModeEnabled && query.trim() && !hasOperator) {
@@ -220,7 +216,6 @@ export default function SearchBar({
               "Some error happened (probably credits finished :sad:)",
           });
 
-          // Turn off AI mode so it doesn't spam toasts on every keystroke
           setAiModeEnabled(false);
           setDebouncedAiQuery("");
         } finally {
@@ -229,7 +224,7 @@ export default function SearchBar({
       } else {
         setDebouncedAiQuery("");
       }
-    }, 800); // Debounce to prevent spamming API
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [

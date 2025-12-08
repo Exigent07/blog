@@ -56,7 +56,7 @@ export function AboutPage() {
             <CreativeButton icon="left" href="/">
               Home
             </CreativeButton>
-            <CreativeButton href="/posts">All Posts</CreativeButton>
+            <CreativeButton href="/posts">View All</CreativeButton>
           </motion.div>
         </div>
 

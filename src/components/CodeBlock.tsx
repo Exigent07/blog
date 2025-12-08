@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Check, Code2, Sparkles, Terminal, Loader2 } from "lucide-react"; // Added Loader2
+import { Copy, Check, Code2, Sparkles, Terminal, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { handleDownload } from "@/utils/file";
-import { explainCode } from "@/app/actions"; // Import the server action
-import ReactMarkdown from "react-markdown"; // Optional: for better formatting of AI response
+import { explainCode } from "@/app/actions";
+import ReactMarkdown from "react-markdown";
 
 export default function CodeBlock({
   children,

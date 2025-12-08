@@ -20,9 +20,7 @@ export default function TableOfContents({
   isCollapsed: boolean;
   onToggle: () => void;
 }) {
-  // Ref for the scrollable container
   const navRef = useRef<HTMLElement>(null);
-  // Ref for the list of link elements (to find the active one)
   const itemRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
 
   const handleScrollToSection = (
@@ -86,7 +84,6 @@ export default function TableOfContents({
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                // Store ref for this specific item
                 ref={(el) => {
                   if (el) {
                     itemRefs.current.set(item.id, el);
