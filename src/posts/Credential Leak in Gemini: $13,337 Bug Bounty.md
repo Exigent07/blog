@@ -18,8 +18,6 @@ The vulnerability stemmed from inadequate sanitization of Markdown input in Gemi
 - **Type:** Stored HTML Injection via Markdown sanitization bypass
 - **Attack Vector:** Malicious payload embedded in shared chat conversations
 - **Trigger Condition:** Victim opens shared Gemini chat link
-- **Persistence:** Payload stored server-side and rendered on every visit
-- **User Interaction:** Minimal - only requires clicking a shared link
 - **Reward:** $13,337
 
 ---
@@ -109,25 +107,6 @@ When a victim opened the shared link, their browser would:
 - User clicks the crafted button, adding credentials to URL query string
 - Invisible image loads, sending full URL (with credentials) via Referer header to attacker's server
 
-## Impact Assessment
-
-### Why This Matters
-
-**Stored Nature:** Unlike reflected XSS or self-XSS, this vulnerability persisted server-side and affected anyone who accessed the shared link.
-
-**Zero-Click Exploitation:** Once the malicious chat was shared, victims only needed to click the link - no additional interaction required for the payload to execute.
-
-**Platform Trust Abuse:** The attack leveraged Gemini's official sharing mechanism, making malicious links indistinguishable from legitimate shared conversations.
-
-**Multi-Platform Exposure:** The same Markdown rendering vulnerability existed across Google's ecosystem wherever Gemini was embedded, including Google Docs and Drive.
-
-### Security Implications
-
-- **Credential Theft:** Direct capture of autofilled passwords through browser behavior exploitation
-- **Phishing at Scale:** Ability to create convincing fake security prompts under Google's domain
-- **Session Hijacking:** Potential to trigger logout flows or capture session tokens through spoofed UI elements
-- **Trust Exploitation:** Users conditioned to trust google.com domains would be less suspicious
-
 ## Disclosure Timeline
 
 | Date | Event |
@@ -139,26 +118,6 @@ When a victim opened the shared link, their browser would:
 | September 18, 2025 | Reward issued: **$13,337** |
 | September 18, 2025 | Confirmed 90-day disclosure window |
 | November 19, 2025 | Planned public disclosure date |
-
-## Lessons Learned
-
-### For Security Researchers
-
-**Document Evolution:** The bug evolved between platform updates - tracking these changes helped demonstrate it wasn't a one-time fluke.
-
-**Think Beyond XSS:** While CSP prevented JavaScript execution, HTML injection alone enabled high-impact exploitation through UI spoofing and browser feature abuse.
-
-**Cross-Browser Testing:** Firefox's divergent `referrerpolicy` handling was crucial to the credential exfiltration chain - always test across browsers.
-
-**Persistent Communication:** Following up respectfully and providing additional technical details helped the VRP panel understand the full impact.
-
-### For Developers
-
-**Defense in Depth:** Even with strong CSP, HTML injection can be weaponized through browser features like autofill and referrer leakage.
-
-**Markdown Sanitization is Complex:** Libraries that render user-controlled Markdown must carefully handle edge cases around code blocks, nested structures, and HTML entity encoding.
-
-**Test Shared Content Paths:** Features that store and reshare user content create persistent attack surfaces that deserve extra security scrutiny.
 
 ## Conclusion
 
