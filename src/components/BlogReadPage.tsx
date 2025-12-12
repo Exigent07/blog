@@ -61,16 +61,25 @@ export function BlogReadPage({
     referrer === "/posts" ? router.push("/posts") : router.push("/");
 
   const handleTagClick = (tag: string) =>
-    router.push(`/posts?q=tag:${encodeURIComponent(tag)}`);
+    router.push(`/posts?q=tag:"${encodeURIComponent(tag)}"`);
 
-  const handleCategoryClick = () =>
-    router.push(`/posts?q=category:${encodeURIComponent(post.category)}`);
+  const handleCategoryClick = () => {
+    router.push(`/posts?q=category:"${encodeURIComponent(post.category)}"`);
+  };
 
-  const handleDateClick = (date: string) =>
-    router.push(`/posts?q=date:${encodeURIComponent(date)}`);
+  const handleDateClick = (date: string) => {
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    router.push(`/posts?q=year:${year}`);
+  };
 
-  const handleReadTimeClick = (readTime: string) =>
-    router.push(`/posts?q=readtime:${encodeURIComponent(readTime)}`);
+  const handleReadTimeClick = (readTime: string) => {
+    const match = readTime.match(/(\d+)/);
+    if (match) {
+      const minutes = parseInt(match[1]);
+      router.push(`/posts?q=readtime:<${minutes + 1}`);
+    }
+  };
 
   const tableOfContents = useMemo(() => {
     const headingRegex = /^(#{1,6})\s+([^\n]+)$/gm;
