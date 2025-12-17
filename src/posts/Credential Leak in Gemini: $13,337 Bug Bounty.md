@@ -1,7 +1,7 @@
 ---
 
 title: "Credential Leak in Gemini: $13,337 Bug Bounty"
-date: "Oct 15, 2025"
+date: "Nov 20, 2025"
 category: "Bug Bounty"
 tags: ["XSS", "HTMLi", "Google VRP"]
 excerpt: "Deep dive into discovering and reporting a critical stored HTML injection vulnerability in Google Gemini."
