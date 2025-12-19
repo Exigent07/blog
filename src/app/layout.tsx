@@ -24,19 +24,7 @@ export const metadata: Metadata = {
     "I'm Aravindh. I kind of hate security, but it pays well, so here I am — doing CTFs, finding bugs, and sharing whatever I learn along the way.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
-      {
-        url: "/android-chrome-192x192.png",
-        type: "image/png",
-        sizes: "192x192",
-      },
-      {
-        url: "/android-chrome-512x512.png",
-        type: "image/png",
-        sizes: "512x512",
-      },
+      { url: "/icon.png", sizes: "64x64", type: "image/png" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
