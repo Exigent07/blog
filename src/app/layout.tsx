@@ -82,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth scrollbar-custom" suppressHydrationWarning={true}>
       <body className="bg-black min-h-screen text-white antialiased selection:bg-purple-500/30 selection:text-purple-200">
         <UIProvider>
           <Header />

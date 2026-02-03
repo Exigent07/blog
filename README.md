@@ -6,10 +6,14 @@ Just another normal blog in my github :)
   ```yaml
   ---
   title: "Post Title"
-  date: 2025-01-01
-  author: "Your Name"
-  summary: "One-line summary"
+  date: Jan 01, 2025
+  category: "Category"
   tags: ["tag1","tag2"]
-  draft: false
+  excerpt: "A small summary"
   ---
+  ```
+
+## Mention
+  ```md
+  @name:twitter:github:bluesky:{description}
   ```

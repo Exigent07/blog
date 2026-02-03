@@ -115,6 +115,7 @@ export default function CodeBlock({
       <SyntaxHighlighter
         language={language}
         style={vscDarkPlus}
+        className="scrollbar-custom"
         customStyle={{
           margin: 0,
           padding: "1rem",

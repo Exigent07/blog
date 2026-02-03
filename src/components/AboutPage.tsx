@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Code2, Shield, Trophy, Mail, ArrowUpRight, Sparkles, Copy } from "lucide-react";
+import { Code2, Shield, Trophy, Mail, ArrowUpRight, Sparkles, Copy, DollarSign, Bug, Award } from "lucide-react";
 import { toast } from "sonner";
 import CreativeButton from "@/components/CreativeButton";
 import PageTitle from "@/components/PageTitle";
@@ -15,6 +15,29 @@ export function AboutPage() {
     { icon: Shield, title: "Bug Bounty Hunter", description: "Finding and reporting security vulnerabilities" },
     { icon: Code2, title: "Full-Stack Developer", description: "Building modern web applications" },
   ];
+
+  const bountyBreakdown = [
+    { company: "Google Gemini", amount: 13337, bugs: 1 },
+    { company: "Google Gemini", amount: 15000, bugs: 1 },
+    { company: "ChatGPT", amount: 250, bugs: 1 },
+    { company: "ChatGPT", amount: 200, bugs: 1 },
+    { company: "GenAI", amount: 500, bugs: 1 },
+    { company: "Grok", amount: 0, bugs: 2 },
+  ];
+
+  const totalBounty = bountyBreakdown.reduce((sum, item) => sum + item.amount, 0);
+  const totalBugs = bountyBreakdown.reduce((sum, item) => sum + item.bugs, 0);
+
+  const companiesStats = bountyBreakdown.reduce((acc, item) => {
+    const existing = acc.find(c => c.company === item.company);
+    if (existing) {
+      existing.amount += item.amount;
+      existing.bugs += item.bugs;
+    } else {
+      acc.push({ ...item });
+    }
+    return acc;
+  }, [] as typeof bountyBreakdown);
 
   const bugPlatforms = [
     { icon: SiBugcrowd, label: "Bugcrowd", href: "https://bugcrowd.com/h/exigent07", handle: "Exigent07" },
@@ -114,7 +137,7 @@ export function AboutPage() {
                   transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
                   className="group relative p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20 transition-all duration-500"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative">
                     <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-4 group-hover:border-white/30 group-hover:bg-white/10 transition-all duration-500">
                       <Icon size={20} className="text-white/60 group-hover:text-white/80 transition-colors duration-500" />
@@ -126,6 +149,98 @@ export function AboutPage() {
               );
             })}
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mb-20"
+        >
+          <motion.h3
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            className="text-2xl text-white/80 mb-6 flex items-center gap-2"
+          >
+            <Award size={24} className="text-white/60" />
+            Bug Bounty Stats
+          </motion.h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="group relative p-8 rounded-2xl border border-white/20 bg-gradient-to-br from-white/5 to-transparent hover:from-white/8 hover:border-white/25 transition-all duration-500"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <DollarSign size={20} className="text-white/70" />
+                    <span className="text-white/50 text-sm">Total Bounties Earned</span>
+                  </div>
+                  <div className="text-4xl font-bold text-white/90 mb-1">
+                    ${totalBounty.toLocaleString()}
+                  </div>
+                  <div className="text-white/40 text-xs">Across {companiesStats.length} companies</div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.65 }}
+              className="group relative p-8 rounded-2xl border border-white/20 bg-gradient-to-br from-white/5 to-transparent hover:from-white/8 hover:border-white/25 transition-all duration-500"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Bug size={20} className="text-white/70" />
+                    <span className="text-white/50 text-sm">Total Bugs Reported</span>
+                  </div>
+                  <div className="text-4xl font-bold text-white/90 mb-1">
+                    {totalBugs}
+                  </div>
+                  <div className="text-white/40 text-xs">Accepted vulnerabilities</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Company Breakdown */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {companiesStats.map((company, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.75 + index * 0.05 }}
+                className="group relative p-6 rounded-2xl border border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/20 transition-all duration-500"
+              >
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-white/80 font-medium">{company.company}</h4>
+                    <div className="px-2 py-1 flex items-center justify-center rounded-full bg-white/10 border border-white/20">
+                      <span className="text-white/60 text-xs p-1 font-mono">{company.bugs} bug{company.bugs > 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold text-white/90">
+                      {company.amount > 0 ? `$${company.amount.toLocaleString()}` : 'Informative'}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
 
         <motion.div
