@@ -104,7 +104,7 @@ But because my HTML injection broke out of the Markdown renderer completely, I c
 
 This was the key to making the attack truly dangerous.
 
-![video:{PoC for IDP}](/blog-resources/The%20Bug%20That%20Cost%20Google%20Gemini%20$15,000/poc-gemini-idp.mp4)
+![video:{PoC for IDP}](/blog-resources/The%20Bug%20That%20Cost%20Google%20Gemini%20$15,000/poc-gemini-idp.webm)
 
 ### The Full Attack Chain
 
