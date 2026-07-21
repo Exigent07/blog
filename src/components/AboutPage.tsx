@@ -22,6 +22,7 @@ export function AboutPage() {
     { company: "ChatGPT", amount: 250, bugs: 1 },
     { company: "ChatGPT", amount: 200, bugs: 1 },
     { company: "GenAI", amount: 500, bugs: 1 },
+    { company: "GenAI", amount: 500, bugs: 1 },
     { company: "Grok", amount: 0, bugs: 2 },
   ];
 
