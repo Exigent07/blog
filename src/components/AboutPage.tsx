@@ -18,6 +18,7 @@ export function AboutPage() {
 
   const bountyBreakdown = [
     { company: "Google Gemini", amount: 13337, bugs: 1 },
+    { company: "Google Gemini", amount: 13337, bugs: 1 },
     { company: "Google Gemini", amount: 15000, bugs: 1 },
     { company: "ChatGPT", amount: 250, bugs: 1 },
     { company: "ChatGPT", amount: 200, bugs: 1 },
