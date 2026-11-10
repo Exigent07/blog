@@ -1,0 +1,180 @@
+/*
+ * Ink field. The heading and the author's line on bug bounty, then the ledger: program
+ * names in the text face, every figure in Plex Mono with tabular numerals,
+ * right-aligned so the columns of amounts line up. Rules are the table's own.
+ */
+.section {
+  position: relative;
+  padding: var(--section-gap) var(--margin-right) var(--section-gap) var(--margin-x);
+  background: var(--ground);
+  color: var(--fore);
+}
+
+.top {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.heading {
+  font-size: var(--step-head);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-head);
+}
+
+.quote {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+}
+
+/* Statement size: a paragraph, not a headline. */
+.quoteText {
+  margin: 0;
+  max-width: 30ch;
+  font-size: clamp(1.375rem, 1rem + 1.4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.26;
+  letter-spacing: -0.02em;
+}
+
+.quoteText p {
+  text-indent: -0.42em;
+}
+
+.caption,
+.table thead th {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.tableRegion {
+  margin-top: clamp(3.5rem, 2rem + 4vw, 6.5rem);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.tableRegion:focus-visible {
+  outline-offset: 4px;
+}
+
+.table {
+  width: 100%;
+  min-width: 18rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary {
+  caption-side: top;
+  /* Inside the scroller, so it is held to the visible width: it never scrolls out of view. */
+  max-width: min(30ch, 100vw - var(--margin-x) - var(--margin-right));
+  padding-bottom: 2rem;
+  font-size: var(--step-lead);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 1.1rem 0 1.1rem 0.75rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.table th:first-child {
+  padding-left: 0;
+}
+
+.table thead th {
+  padding-block: 0 0.9rem;
+  border-bottom: 1.5px solid var(--fore);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--line);
+}
+
+.program {
+  font-size: clamp(1.125rem, 0.95rem + 0.9vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  hyphens: manual;
+}
+
+.numeric {
+  font-family: var(--font-mono);
+  font-size: clamp(0.875rem, 0.75rem + 0.45vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.table .numeric {
+  text-align: right;
+}
+
+/* Mono figures sit lower than the program name's cap height; align first lines. */
+.table tbody td,
+.table tfoot td {
+  padding-top: calc(1.1rem + 0.15em);
+}
+
+.rewards {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+}
+
+.table tfoot th,
+.table tfoot td {
+  padding-top: 1.35rem;
+  border-top: 1.5px solid var(--fore);
+  vertical-align: baseline;
+}
+
+.total {
+  font-size: clamp(1.125rem, 0.8rem + 1.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+@media (min-width: 40rem) {
+  .table th,
+  .table td {
+    padding-left: 2rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .top {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: end;
+  }
+
+  .heading {
+    grid-column: 1 / span 7;
+  }
+
+  .quote {
+    grid-column: 8 / -1;
+  }
+
+  /* Figures gather at the right, as in a statement of account. */
+  .table thead th:nth-child(2) {
+    width: 9rem;
+  }
+
+  .table thead th:nth-child(3),
+  .table thead th:nth-child(4) {
+    width: 12rem;
+  }
+}

@@ -1,0 +1,134 @@
+/*
+ * Code is an ink slab (data-tone="ink"): the roles swap as in any ink scope,
+ * repeated here so the slab holds even where the attribute is absent. The
+ * header reads only outermost surfaces, so it never flips over a code block;
+ * the progress indicator reads the innermost and does. Colours inside lines
+ * come from the Shiki ink theme.
+ * A parent may set --code-pad (the prose does on phones, to put code on the
+ * text edge when the slab runs edge to edge).
+ */
+.block {
+  --ground: var(--ink);
+  --fore: var(--paper);
+  --fore-muted: var(--paper-dim);
+  --line: var(--rule-ink);
+  --pad: var(--code-pad, clamp(1rem, 0.7rem + 1vw, 1.5rem));
+
+  background: var(--ground);
+  color: var(--fore);
+  color-scheme: dark;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding-inline: var(--pad) calc(var(--pad) - 0.5rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.language {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.copy {
+  --ba-size: var(--step-label);
+
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+  color: var(--fore);
+}
+
+.copy:focus-visible {
+  outline-offset: -2px;
+}
+
+.pre {
+  margin: 0;
+  padding-block: 1.15em 1.3em;
+  overflow-x: auto;
+  font-size: 0.9em;
+  line-height: 1.65;
+  tab-size: 2;
+}
+
+/* Drawn inside the slab, where the paper outline reads against ink. */
+.pre:focus-visible {
+  outline-offset: -4px;
+}
+
+/* One grid row per line, as wide as the longest line, so line states span the slab. */
+.pre :global(code) {
+  display: grid;
+  width: max-content;
+  min-width: 100%;
+  font-size: inherit;
+}
+
+.pre :global(.line) {
+  position: relative;
+  min-height: 1lh;
+  padding-inline: var(--pad);
+}
+
+/* Shiki notation: highlighted, added and removed lines carry a paper bar at the slab's edge. */
+.pre :global(.line.highlighted),
+.pre :global(.line.diff) {
+  background: var(--rule-ink);
+}
+
+.pre :global(.line.highlighted)::before,
+.pre :global(.line.diff)::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--fore);
+}
+
+.pre:global(.has-diff) :global(.line) {
+  padding-left: calc(var(--pad) + 2ch);
+}
+
+.pre :global(.line.diff)::after {
+  position: absolute;
+  left: var(--pad);
+  color: var(--fore);
+}
+
+.pre :global(.line.diff.add)::after {
+  content: "+";
+}
+
+.pre :global(.line.diff.remove)::after {
+  content: "\2212";
+}
+
+.pre :global(.line.diff.remove) > :global(span) {
+  opacity: 0.7;
+}
+
+.pre:global(.has-focused) :global(.line:not(.focused)) {
+  opacity: 0.4;
+  transition: opacity var(--dur-micro) linear;
+}
+
+.pre:global(.has-focused):is(:hover, :focus-visible) :global(.line) {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pre:global(.has-focused) :global(.line:not(.focused)) {
+    transition: none;
+  }
+}

@@ -1,0 +1,190 @@
+/*
+ * What the author writes about: the thesis as one statement, its key clause in ink
+ * highlight, then the five areas; beside it, a compact index of the
+ * investigations. On hover or focus an entry steps right and the marker
+ * (//────) takes the space it leaves; the whole row is the link.
+ */
+.section {
+  position: relative;
+  display: grid;
+  gap: 4rem;
+  padding: calc(var(--section-gap) * 0.7) var(--margin-right) var(--section-gap) var(--margin-x);
+  color: var(--fore);
+}
+
+.lede {
+  display: grid;
+  align-content: start;
+  gap: 1.75rem;
+}
+
+.heading {
+  font-size: var(--step-head);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-head);
+}
+
+/* Statement size: a paragraph, not a headline. */
+.statement {
+  max-width: 30ch;
+  font-size: clamp(1.375rem, 1rem + 1.4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.26;
+  letter-spacing: -0.02em;
+}
+
+.statement mark {
+  padding: 0 0.12em;
+  background: var(--fore);
+  color: var(--ground);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.areas {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.5rem 0 0;
+  font-size: var(--step-lead);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.index {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+.entries {
+  margin: 0;
+  border-top: 1.5px solid var(--fore);
+}
+
+.entry {
+  --title-size: clamp(1.25rem, 1rem + 0.9vw, 1.875rem);
+  --marker-w: 3.25rem;
+
+  position: relative;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* The right padding is the room the row steps into, so it never leaves the column. */
+.body {
+  display: grid;
+  gap: 0.6rem;
+  padding-right: var(--marker-w);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.title {
+  font-size: var(--title-size);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The whole row answers to the title link. */
+.title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.title:focus-visible {
+  outline-offset: 0.35rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--fore-muted);
+}
+
+.meta dd {
+  margin: 0;
+}
+
+/* Centred on the title's first line (1.12em tall). */
+.marker {
+  position: absolute;
+  left: 0;
+  top: calc(1.25rem + var(--title-size) * 0.56 - 0.4rem);
+  display: flex;
+  align-items: flex-end;
+  width: calc(var(--marker-w) - 0.75rem);
+  height: 0.8rem;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-short) var(--ease-out);
+}
+
+.slashes {
+  flex: none;
+  height: 100%;
+  width: auto;
+}
+
+.markerLine {
+  flex: 1;
+  height: 1.5px;
+  margin-bottom: 0.3rem;
+  background: currentColor;
+}
+
+.entry:hover .body,
+.entry:has(.title:focus-visible) .body {
+  transform: translateX(var(--marker-w));
+}
+
+.entry:hover .marker,
+.entry:has(.title:focus-visible) .marker {
+  clip-path: inset(0);
+}
+
+.archive {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 1.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (min-width: 64rem) {
+  .section {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .lede {
+    grid-column: 1 / span 6;
+  }
+
+  /* The index's top rule sits level with the heading's cap height. */
+  .index {
+    grid-column: 8 / -1;
+    padding-top: calc(var(--step-head) * 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body,
+  .marker {
+    transition: none;
+  }
+}

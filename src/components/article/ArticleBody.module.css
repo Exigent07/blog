@@ -1,0 +1,16 @@
+/* Areas of the article grid (Article.module.css) on desktop; document order elsewhere. */
+@media (min-width: 64rem) {
+  /*
+   * Stretched to the full height of its area: a sticky element is held inside
+   * its containing block, and the rail (not the whole article grid, which
+   * includes the byline row) is that block for the contents.
+   */
+  .rail {
+    grid-area: toc;
+    align-self: stretch;
+  }
+
+  .body {
+    grid-area: body;
+  }
+}

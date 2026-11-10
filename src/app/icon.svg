@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    The // mark (path data from src/components/brand/SlashMark.tsx) in paper
+    on an ink tile. It is 20 of 32 units tall, so its top and bottom edges
+    land on whole pixels at 16 and 32 px.
+  -->
+  <rect width="32" height="32" fill="#070706"/>
+  <path fill="#F8F2F0" transform="translate(1.8065 6) scale(0.645161)" d="M16.5 0H26L9.5 31H0ZM34.5 0H44L27.5 31H18Z"/>
+</svg>

@@ -1,0 +1,15 @@
+# Editorial choices for the homepage, validated at build time against
+# `editorialSchema` in src/lib/content/schema.ts.
+
+featured:
+  slug: when-language-becomes-layout
+  # Hero line breaks. Put the longest line last: it is the line that crosses
+  # the boundary into the black territory.
+  lines: [When, Language, Becomes Layout]
+  summary: How one Unicode separator turned a code block’s language into control over its styling.
+
+# Investigations shown as specimens under the hero, in this order.
+selected:
+  - the-bug-that-cost-google-gemini
+  - when-language-becomes-layout
+  - credential-leak-in-gemini

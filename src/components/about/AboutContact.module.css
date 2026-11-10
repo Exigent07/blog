@@ -1,0 +1,188 @@
+/*
+ * The address is the action: one line at the full measure ("contact@
+ * exigent07.com" advances 10.5em at the heading tracking). Its ink copy is
+ * clipped by a 46.4° edge that starts beyond the right end and sweeps across
+ * on hover and focus, as the boundary does. The box is 1.2em tall, so the
+ * edge's horizontal run is 0.953 × 1.2em.
+ */
+.section {
+  position: relative;
+  container-type: inline-size;
+  display: grid;
+  align-content: start;
+  overflow-x: clip;
+  padding: var(--section-gap) var(--margin-right) var(--section-gap) var(--margin-x);
+  color: var(--fore);
+}
+
+.heading {
+  font-size: var(--step-head);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-head);
+}
+
+.email {
+  --run: calc(0.953 * 1.2em);
+  --closed: polygon(calc(100% + var(--run)) 0, calc(100% + 2.4em) 0, calc(100% + 2.4em) 100%, 100% 100%);
+  --open: polygon(0 0, calc(100% + 2.4em) 0, calc(100% + 2.4em) 100%, calc(-1 * var(--run)) 100%);
+
+  position: relative;
+  justify-self: start;
+  margin: clamp(1.5rem, 1rem + 2vw, 3rem) 0 0 -0.12em;
+  padding: 0.05em 0.12em;
+  font-size: min(100cqi / 10.75, 9rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-head);
+  white-space: nowrap;
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: max(2px, 0.03em);
+  text-underline-offset: 0.12em;
+}
+
+.emailInk {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: inherit;
+  clip-path: var(--closed);
+  transition: clip-path var(--dur-medium) var(--ease-in-out);
+  pointer-events: none;
+  user-select: none;
+}
+
+.email:hover .emailInk,
+.email:focus-visible .emailInk {
+  clip-path: var(--open);
+}
+
+.email:focus-visible {
+  outline-offset: 0.1em;
+}
+
+.channels {
+  display: grid;
+  gap: 3rem var(--gutter);
+  margin-top: clamp(3.5rem, 2rem + 4vw, 6rem);
+}
+
+.group {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+.label {
+  padding-bottom: 0.9rem;
+  border-bottom: 1.5px solid var(--fore);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+/* Discord's copy row sits on the same rule as the profile lists. */
+.group > :not(.label, .profiles) {
+  padding-top: 0.6rem;
+}
+
+.profiles {
+  margin: 0;
+}
+
+.profile {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+  min-height: 2.75rem;
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.platform {
+  font-size: var(--step-body);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.handle {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  color: var(--fore-muted);
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+/* The slash marker takes the place the platform name moves away from. */
+.marker {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 0.75rem;
+  translate: 0 -50%;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-short) var(--ease-out);
+}
+
+.slashes {
+  height: 100%;
+  width: auto;
+}
+
+.profile:hover .platform,
+.profile:focus-visible .platform {
+  transform: translateX(1.75rem);
+}
+
+.profile:hover .marker,
+.profile:focus-visible .marker {
+  clip-path: inset(0);
+}
+
+@media (min-width: 40rem) {
+  .channels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .channels {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .group:nth-child(1) {
+    grid-column: 1 / span 3;
+  }
+
+  .group:nth-child(2) {
+    grid-column: 5 / span 4;
+  }
+
+  .group:nth-child(3) {
+    grid-column: 9 / span 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emailInk,
+  .platform,
+  .marker {
+    transition: none;
+  }
+}

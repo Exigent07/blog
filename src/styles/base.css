@@ -1,0 +1,296 @@
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100svh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+    padding: 0;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    color-scheme: light;
+    scroll-padding-top: calc(var(--header-height) + 1.5rem);
+  }
+
+  @media (pointer: fine) {
+    html {
+      overscroll-behavior-y: none;
+    }
+  }
+
+  body {
+    font-family: var(--font-text);
+    font-size: var(--step-body);
+    line-height: var(--leading-body);
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+    background: var(--ground);
+    color: var(--fore);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--tracking-head);
+    text-wrap: balance;
+    hyphens: none;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.18em;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  /* Content scrolls over the footer, which sits beneath it (sticky on desktop). */
+  main {
+    position: relative;
+    z-index: 1;
+    display: block;
+    background: var(--paper);
+  }
+
+  /* <main> is a programmatic focus target (skip link, back to top), not a control. */
+  main:focus {
+    outline: none;
+  }
+
+  /* Role tokens: every tone scope (sections, panels, code slabs) selects in its own inverse. */
+  ::selection {
+    background: var(--fore);
+    color: var(--ground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--fore);
+    outline-offset: 3px;
+    border-radius: 0;
+  }
+
+  /*
+   * Scrollbars. The page has none of its own: the progress indicator
+   * (src/components/chrome/ScrollProgress) shows where the reader is, and
+   * scrolling itself is untouched. Every other scroll container (the article
+   * contents, code, tables, search results, and any added later) gets the
+   * same bar in its own surface's tone, with nothing to opt in: a hairline
+   * track and a solid square thumb that thickens under the pointer.
+   */
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-track:vertical {
+    background: linear-gradient(var(--line), var(--line)) 50% 0 / 1px 100% no-repeat;
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    background: linear-gradient(var(--line), var(--line)) 0 50% / 100% 1px no-repeat;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 4px solid transparent;
+    background: var(--fore) padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    border-width: 3px;
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /*
+   * Where those pseudo-elements don't exist (Firefox), the standard
+   * properties. Blink would let them switch the bars above off, so they stay
+   * behind this test, and components never set scrollbar-* themselves.
+   */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--fore) transparent;
+    }
+
+    html {
+      scrollbar-width: none;
+    }
+  }
+
+  /* Native dialogs inherit tone from their content, not the page. */
+  dialog {
+    color: inherit;
+    padding: 0;
+    border: 0;
+    max-width: none;
+    max-height: none;
+  }
+}
+
+@layer base {
+  /*
+   * Reveal targets (src/components/motion/useReveals.ts) are faded out before
+   * first paint only when JavaScript runs (the root layout marks <html data-js>)
+   * and motion is allowed; the animation then shows them. Opacity only, never
+   * visibility: waiting content stays focusable and in the accessibility tree.
+   * Line reveals keep the browser's normal wrapping, which SplitText measures.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :root[data-js] :is([data-reveal="lines"], [data-reveal="block"]) {
+      opacity: 0;
+    }
+
+    /*
+     * Page titles are usually the largest paint, so their entrance is pure
+     * CSS: it starts at first paint instead of waiting for hydration.
+     */
+    [data-reveal="title"] {
+      animation: title-rise 1.1s var(--ease-out) 0.08s both;
+    }
+  }
+
+  @keyframes title-rise {
+    from {
+      clip-path: inset(0 -10% 100% -10%);
+      translate: 0 0.3em;
+    }
+    to {
+      clip-path: inset(-30% -10% -30% -10%);
+      translate: 0 0;
+    }
+  }
+
+  [data-reveal="lines"] {
+    text-wrap: wrap;
+  }
+}
+
+@layer utilities {
+  /* Type steps (docs/DESIGN.md §3). Display is Host Grotesk 700. */
+  .t-display {
+    font-size: var(--step-display);
+    font-weight: 700;
+    line-height: 0.86;
+    letter-spacing: var(--tracking-display);
+  }
+
+  .t-lead {
+    font-size: var(--step-lead);
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: var(--step-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--fore-muted);
+    font-variant-numeric: tabular-nums;
+  }
+}

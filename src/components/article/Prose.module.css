@@ -1,0 +1,298 @@
+/*
+ * Article prose. 32em of Host Grotesk is about 71 characters per line (its
+ * "0" is 0.65em wide, so this is ~49ch, inside the 68ch limit).
+ *
+ * The container is a grid: text sits in the prose column; code, tables and
+ * figures (.wide) reach into a wider column on desktop and run edge to edge
+ * on phones. Grid items never collapse margins, so all rhythm is a top
+ * margin on the following element, written with :where() so that source
+ * order alone decides between the rules.
+ */
+.prose {
+  display: grid;
+  /* The prose column fills first; the wide column takes what is left, up to 20em more. */
+  grid-template-columns: [prose-start] minmax(0, 32em) [prose-end] minmax(0, 1fr) [wide-end];
+  align-content: start;
+  max-width: 52em;
+  font-size: var(--step-body);
+  line-height: var(--leading-body);
+}
+
+.prose > * {
+  grid-column: prose;
+  min-width: 0;
+}
+
+.prose > .wide {
+  grid-column: prose-start / wide-end;
+}
+
+.prose > :where(* + *) {
+  margin-top: 1.3em;
+}
+
+.prose > :where(* + .wide, .wide + *) {
+  margin-top: calc(var(--step-body) * 2);
+}
+
+.prose > :where(hr, hr + *) {
+  margin-top: calc(var(--step-body) * 3);
+}
+
+.prose > :where(h2) {
+  margin-top: calc(var(--step-body) * 3.75);
+}
+
+.prose > :where(h3) {
+  margin-top: calc(var(--step-body) * 2.5);
+}
+
+.prose > :where(h4) {
+  margin-top: calc(var(--step-body) * 2);
+}
+
+.prose > :where(h2 + *, h3 + *, h4 + *) {
+  margin-top: calc(var(--step-body) * 0.75);
+}
+
+.prose > :where(h2 + h3) {
+  margin-top: calc(var(--step-body) * 1.5);
+}
+
+.prose > :where(:first-child) {
+  margin-top: 0;
+}
+
+/* ---------- Headings ---------- */
+
+/* The root's scroll-padding already clears the fixed header; this is the extra breathing room. */
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: 1rem;
+}
+
+.prose h2 {
+  font-size: clamp(1.625rem, 1.2rem + 1.3vw, 2.375rem);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+}
+
+.prose h3 {
+  font-size: clamp(1.25rem, 1.08rem + 0.5vw, 1.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+}
+
+.prose h4 {
+  font-size: 1em;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Inline ---------- */
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose a {
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.2em;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+.inlineCode {
+  padding: 0.08em 0.32em;
+  border: 1px solid var(--line);
+  font-size: 0.86em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.prose :is(h2, h3, h4) .inlineCode {
+  padding: 0;
+  border: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+/* ---------- Lists: hanging markers, text on the prose edge's indent ---------- */
+
+.prose :is(ul, ol) {
+  padding-left: 1.5em;
+}
+
+.prose li + li,
+.prose li > :is(ul, ol, p + p) {
+  margin-top: 0.5em;
+}
+
+.prose ul > li {
+  position: relative;
+}
+
+/* The label square, at x-height. */
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.68em;
+  left: -1.2em;
+  width: 0.34em;
+  height: 0.34em;
+  background: currentColor;
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.84em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--fore-muted);
+}
+
+/* ---------- Blocks ---------- */
+
+.prose blockquote {
+  padding-left: 1.25em;
+  border-left: 1px solid var(--fore);
+  font-style: italic;
+}
+
+.prose blockquote > * + * {
+  margin-top: 0.75em;
+}
+
+.callout {
+  padding-left: 1.25em;
+  border-left: 3px solid var(--fore);
+}
+
+.callout > * + * {
+  margin-top: 0.75em;
+}
+
+.callout > .calloutLabel + * {
+  margin-top: 0.35em;
+}
+
+.calloutLabel {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.prose hr {
+  height: 1px;
+  border: 0;
+  background: var(--line);
+}
+
+/* ---------- Tables ---------- */
+
+.tableRegion {
+  overflow-x: auto;
+}
+
+.tableRegion:focus-visible {
+  outline-offset: 4px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375em;
+  line-height: 1.5;
+}
+
+.table th {
+  padding: 0 1.75em 0.75em 0;
+  border-bottom: 1px solid var(--fore);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: bottom;
+  white-space: nowrap;
+  color: var(--fore-muted);
+}
+
+.table td {
+  padding: 0.8em 1.75em 0.8em 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: baseline;
+}
+
+.table :is(th, td):last-child {
+  padding-right: 0;
+}
+
+.table td[data-numeric] {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- Figures ---------- */
+
+.image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.figure video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--ink);
+}
+
+.figure figcaption {
+  max-width: 34em;
+  margin-top: 0.9rem;
+  font-size: 0.875em;
+  line-height: 1.45;
+  color: var(--fore-muted);
+}
+
+/* ---------- Footnotes (GFM) ---------- */
+
+.prose > :global(.footnotes) {
+  padding-top: 1.5em;
+  border-top: 1px solid var(--line);
+  font-size: 0.875em;
+}
+
+.prose :global(.sr-only) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Phones: wide blocks run edge to edge, their content on the text edge ---------- */
+
+@media (max-width: 39.99rem) {
+  .prose > .wide {
+    --code-pad: var(--margin-x);
+
+    margin-inline: calc(-1 * var(--margin-x));
+  }
+
+  .tableRegion,
+  .figure figcaption {
+    padding-inline: var(--margin-x);
+  }
+}

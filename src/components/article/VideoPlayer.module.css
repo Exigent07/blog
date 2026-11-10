@@ -1,0 +1,222 @@
+/*
+ * Article video: an ink slab like the code blocks. The picture sits on the
+ * slab; the controls run beneath it in Plex Mono, separated by a hairline.
+ * The scrubber's thumb is the // mark and its track breaks around it, as on
+ * the page's progress indicator (src/components/chrome/ScrollProgress).
+ */
+.player {
+  --pad: var(--code-pad, clamp(1rem, 0.7rem + 1vw, 1.5rem));
+
+  background: var(--ground);
+  color: var(--fore);
+  color-scheme: dark;
+}
+
+.stage {
+  position: relative;
+}
+
+.video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--ink);
+  cursor: pointer;
+}
+
+.notice {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 0.9rem var(--pad);
+  background: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+}
+
+.noticeLink {
+  color: inherit;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-height: 3.25rem;
+  padding: 0.25rem calc(var(--pad) - 0.5rem);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  line-height: 1;
+}
+
+.action {
+  --ba-size: var(--step-label);
+
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+  color: var(--fore);
+}
+
+.action:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.action[aria-pressed="false"] {
+  color: var(--fore-muted);
+}
+
+.timeline {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.current,
+.duration {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-label);
+}
+
+.duration {
+  color: var(--fore-muted);
+}
+
+.extras {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ---------- The scrubber ---------- */
+
+.seek {
+  /* The // mark at 12px tall is 44:31 wide. */
+  --thumb-w: calc(0.75rem * 44 / 31);
+  --thumb-h: 0.75rem;
+  --center: calc(var(--thumb-w) / 2 + var(--progress, 0) * (100% - var(--thumb-w)));
+  --gap: calc(var(--thumb-w) / 2 + 0.3rem);
+
+  flex: 1;
+  min-width: 4rem;
+  height: 2.75rem;
+  margin: 0;
+  appearance: none;
+  background: linear-gradient(
+      to right,
+      var(--fore) max(0px, calc(var(--center) - var(--gap))),
+      transparent 0 calc(var(--center) + var(--gap)),
+      var(--line) 0
+    )
+    0 50% / 100% 1.5px no-repeat;
+  cursor: pointer;
+}
+
+.seek:disabled {
+  cursor: default;
+}
+
+.seek:focus-visible {
+  outline-offset: 0;
+}
+
+.seek::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+
+.seek::-webkit-slider-thumb {
+  width: var(--thumb-w);
+  height: var(--thumb-h);
+  margin-top: calc((2.75rem - var(--thumb-h)) / 2);
+  border: 0;
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 31'%3E%3Cpath fill='%23f8f2f0' d='M16.5 0H26L9.5 31H0ZM34.5 0H44L27.5 31H18Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.seek::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+
+.seek::-moz-range-thumb {
+  width: var(--thumb-w);
+  height: var(--thumb-h);
+  border: 0;
+  border-radius: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 31'%3E%3Cpath fill='%23f8f2f0' d='M16.5 0H26L9.5 31H0ZM34.5 0H44L27.5 31H18Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* ---------- Without JavaScript: the file, not dead controls ---------- */
+
+.fallback {
+  display: none;
+  padding: 0.9rem var(--pad);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  color: inherit;
+}
+
+:global(:root:not([data-js])) .controls {
+  display: none;
+}
+
+:global(:root:not([data-js])) .fallback {
+  display: block;
+}
+
+/* ---------- Full screen: the slab fills the screen ---------- */
+
+.player:fullscreen {
+  display: flex;
+  flex-direction: column;
+}
+
+.player:fullscreen .stage {
+  flex: 1;
+  min-height: 0;
+}
+
+.player:fullscreen .video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------- Phones: the timeline on its own row above the actions ---------- */
+
+@media (max-width: 39.99rem) {
+  .controls {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "timeline timeline"
+      "play extras";
+    gap: 0;
+    padding-inline: calc(var(--pad) - 0.5rem);
+  }
+
+  .timeline {
+    grid-area: timeline;
+    padding-inline: 0.5rem;
+  }
+
+  .controls > .action {
+    grid-area: play;
+  }
+
+  .extras {
+    grid-area: extras;
+    justify-self: end;
+  }
+}

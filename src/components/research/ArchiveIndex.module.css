@@ -1,0 +1,55 @@
+.index {
+  display: grid;
+  row-gap: clamp(3.5rem, 2.5rem + 3vw, 6rem);
+  margin-top: clamp(2.25rem, 1.5rem + 2vw, 3.5rem);
+}
+
+/* Each year opens with its numeral over an ink rule: the group's structure. */
+.head {
+  display: grid;
+  align-items: last baseline;
+  padding-bottom: 0.875rem;
+  border-bottom: 1.5px solid var(--fore);
+}
+
+.year {
+  font-size: clamp(2.5rem, 1.75rem + 2.6vw, 4.5rem);
+  line-height: 0.82;
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums;
+  margin-left: -0.04em;
+}
+
+.columns {
+  display: none;
+}
+
+@container research-archive (min-width: 66rem) {
+  .head {
+    grid-template-columns: var(--archive-columns);
+    column-gap: var(--archive-gap);
+  }
+
+  .year {
+    grid-column: date-start / title-end;
+  }
+
+  .columns {
+    display: grid;
+    grid-column: topic-start / time-end;
+    grid-template-columns: [topic-start] var(--archive-side);
+    column-gap: var(--archive-gap);
+    font-family: var(--font-mono);
+    font-size: var(--step-label);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--fore-muted);
+  }
+
+  .timeColumn {
+    justify-self: end;
+    white-space: nowrap;
+  }
+}

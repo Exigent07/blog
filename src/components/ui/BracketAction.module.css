@@ -1,0 +1,126 @@
+/*
+ * Sizes derive from the label size, --ba-size, which parents set; it is read
+ * with a fallback and never declared here. Reference ratios at 24u: brackets
+ * 44u tall and 10u wide, label inset 14u, tail starts 37u after the closing
+ * bracket, node 11u, tail 283u long, arrowhead 27u tall.
+ */
+.action {
+  --k: calc(var(--ba-size, var(--step-data)) / 24);
+  /* Capped so the tail never forces horizontal overflow on narrow screens. */
+  --tail-w: min(calc(283 * var(--k)), 18vw);
+  --stroke: max(1.25px, calc(1.6 * var(--k)));
+
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(16 * var(--k)) calc(37 * var(--k));
+  color: inherit;
+}
+
+.bracketed {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: calc(44 * var(--k));
+}
+
+.bracket {
+  width: calc(10 * var(--k));
+  height: 100%;
+  border: var(--stroke) solid currentColor;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.bracket[data-side="start"] {
+  border-right: 0;
+}
+
+.bracket[data-side="end"] {
+  border-left: 0;
+}
+
+.label {
+  padding-inline: calc(14 * var(--k)) calc(18 * var(--k));
+  font-family: var(--font-mono);
+  font-size: var(--ba-size, var(--step-data));
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tail {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: var(--tail-w);
+  height: calc(27 * var(--k));
+}
+
+.node {
+  flex: none;
+  width: calc(11 * var(--k));
+  height: calc(11 * var(--k));
+  border: var(--stroke) solid currentColor;
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+
+.line {
+  flex: 1;
+  height: var(--stroke);
+  background: currentColor;
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.head {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: calc(14 * var(--k));
+  height: 100%;
+  overflow: visible;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+/*
+ * The parent link or button owns the interaction; a larger interactive area
+ * (a stretched link) can drive it instead by carrying data-action-host.
+ */
+:where(a, button):is(:hover, :focus-visible) .bracket[data-side="start"],
+:where([data-action-host]):is(:hover, :focus-within) .bracket[data-side="start"] {
+  transform: translateX(calc(5 * var(--k)));
+}
+
+:where(a, button):is(:hover, :focus-visible) .bracket[data-side="end"],
+:where([data-action-host]):is(:hover, :focus-within) .bracket[data-side="end"] {
+  transform: translateX(calc(-5 * var(--k)));
+}
+
+:where(a, button):is(:hover, :focus-visible) .node,
+:where([data-action-host]):is(:hover, :focus-within) .node {
+  background: currentColor;
+}
+
+:where(a, button):is(:hover, :focus-visible) .line,
+:where([data-action-host]):is(:hover, :focus-within) .line {
+  transform: scaleX(1.14);
+}
+
+:where(a, button):is(:hover, :focus-visible) .head,
+:where([data-action-host]):is(:hover, :focus-within) .head {
+  transform: translateX(calc((var(--tail-w) - 11 * var(--k)) * 0.14));
+}
+
+:where(a, button):active .bracket {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bracket,
+  .node,
+  .line,
+  .head {
+    transition: none;
+  }
+}

@@ -1,0 +1,106 @@
+/*
+ * The story is set at statement size across two columns; facts carry an ink
+ * highlight (inverted, no colour) and the closing line is the way onward.
+ */
+.section {
+  position: relative;
+  background: var(--ground);
+  color: var(--fore);
+  padding: var(--section-gap) var(--margin-right) calc(var(--section-gap) * 1.1) var(--margin-x);
+}
+
+.layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.name {
+  font-size: var(--step-display);
+  line-height: 0.86;
+  letter-spacing: var(--tracking-display);
+  margin-left: -0.05em;
+}
+
+.handles {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.story {
+  margin-top: 2rem;
+  font-size: clamp(1.25rem, 0.95rem + 1.15vw, 2rem);
+  font-weight: 400;
+  line-height: 1.24;
+  letter-spacing: -0.015em;
+}
+
+.story mark {
+  padding: 0 0.12em;
+  background: var(--fore);
+  color: var(--ground);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.closing {
+  margin-top: 1.5em;
+}
+
+.more {
+  color: inherit;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.16em;
+  transition: text-decoration-thickness var(--dur-short) var(--ease-out);
+}
+
+.more::after {
+  content: "";
+  display: inline-block;
+  width: 1.4em;
+  height: 0.09em;
+  margin-left: 0.35em;
+  vertical-align: 0.32em;
+  background: currentColor;
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.more:hover::after,
+.more:focus-visible::after {
+  transform: scaleX(1.6);
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .name,
+  .handles {
+    grid-column: 1 / -1;
+  }
+
+  .story {
+    grid-column: 1 / -1;
+    columns: 2;
+    column-gap: calc(var(--gutter) * 2);
+  }
+
+  .closing {
+    break-inside: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more,
+  .more::after {
+    transition: none;
+  }
+}

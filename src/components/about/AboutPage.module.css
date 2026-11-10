@@ -1,0 +1,4 @@
+/* The spine is positioned against the whole page. */
+.page {
+  position: relative;
+}

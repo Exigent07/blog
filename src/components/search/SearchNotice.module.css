@@ -1,0 +1,50 @@
+.notice {
+  --lead-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+
+  padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+
+.lead {
+  max-width: 24em;
+  font-size: var(--lead-size);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: var(--tracking-head);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.text {
+  max-width: 52ch;
+  margin-top: 0.875rem;
+  font-size: var(--step-body);
+  line-height: var(--leading-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 2.75rem;
+  margin-top: 1.5rem;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .notice {
+    --lead-size: calc(44 * var(--u));
+
+    padding-top: calc(48 * var(--u));
+  }
+
+  .action {
+    --ba-size: calc(19 * var(--u));
+  }
+}

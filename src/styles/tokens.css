@@ -1,0 +1,109 @@
+/*
+ * Design tokens. Values are documented in docs/DESIGN.md; components reference
+ * tokens only, never raw colours, sizes or timings.
+ */
+/* Registered so the boundary can be transitioned and animated as a number. */
+@property --breach {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer tokens {
+  :root {
+    /* Colour */
+    --paper: #f8f2f0;
+    --ink: #070706;
+    --graphite: #66666b;
+    --rule: #bdbbba;
+    --paper-dim: #a3a09d;
+    --rule-ink: #34322f;
+    --dot: #ffffff;
+
+    /* Tone-relative roles. A [data-tone="ink"] scope swaps them. */
+    --ground: var(--paper);
+    --fore: var(--ink);
+    --fore-muted: var(--graphite);
+    --line: var(--rule);
+
+    /* Type families: next/font injects these variables (with fallbacks) on <html>. */
+    --font-text: var(--font-host-grotesk);
+    --font-mono: var(--font-plex-mono);
+
+    /* Type steps */
+    --step-label: clamp(0.8125rem, 0.78rem + 0.1vw, 0.875rem);
+    --step-data: clamp(0.875rem, 0.8rem + 0.25vw, 1.0625rem);
+    --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+    --step-lead: clamp(1.25rem, 1.08rem + 0.6vw, 1.625rem);
+    --step-head: clamp(2.5rem, 1.4rem + 4.4vw, 6rem);
+    --step-display: clamp(3.25rem, 0.9rem + 10vw, 11rem);
+
+    --leading-body: 1.62;
+    --tracking-display: -0.045em;
+    --tracking-head: -0.035em;
+    --tracking-label: 0.02em;
+
+    /* Motion */
+    --dur-micro: 160ms;
+    --dur-short: 320ms;
+    --dur-medium: 640ms;
+    --dur-long: 1100ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+
+    /* Layout (phone first; widened below) */
+    --gutter: 1.25rem;
+    --margin-x: 1.25rem;
+    --margin-right: var(--margin-x);
+    --section-gap: clamp(6rem, 4rem + 8vw, 13rem);
+    --header-height: 4rem;
+    --measure: 68ch;
+
+    /* The boundary: 46.4° from horizontal (dx/dy = 0.953) */
+    --boundary-slope: 0.953;
+
+    /* Stage unit. Only the desktop stage uses it; see the media query below. */
+    --u: 1px;
+  }
+
+  @media (min-width: 40rem) {
+    :root {
+      --gutter: 1.5rem;
+      --margin-x: 2rem;
+      --header-height: 4.5rem;
+    }
+  }
+
+  /*
+   * Desktop stage: the hero is drawn in the reference's 1670 × 942 coordinate
+   * system and scaled uniformly to fit. Wider-than-16:9 viewports centre the
+   * stage horizontally.
+   */
+  @media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+    :root {
+      --u: min(100vw / 1670, 100svh / 942);
+      --stage-x: calc((100vw - 1670 * var(--u)) / 2);
+      /* Extra height on screens taller than 16:9: 40% above the stage, 60% below. */
+      --stage-y: calc((100svh - 942 * var(--u)) * 0.4);
+      --margin-x: calc(var(--stage-x) + 148 * var(--u));
+      --margin-right: calc(var(--stage-x) + 90 * var(--u));
+      --header-height: calc(98 * var(--u));
+    }
+  }
+
+  [data-tone="ink"] {
+    --ground: var(--ink);
+    --fore: var(--paper);
+    --fore-muted: var(--paper-dim);
+    --line: var(--rule-ink);
+    color-scheme: dark;
+  }
+
+  [data-tone="paper"] {
+    --ground: var(--paper);
+    --fore: var(--ink);
+    --fore-muted: var(--graphite);
+    --line: var(--rule);
+    color-scheme: light;
+  }
+}

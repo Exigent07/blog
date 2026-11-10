@@ -1,0 +1,296 @@
+/*
+ * Reference geometry (desktop stage): "0" at x 1362, track 1382 → 1577,
+ * "100" ending at x 1611, centred on y 860. The completed track is the
+ * foreground colour; the rest is the hairline colour. The track breaks around
+ * the mark, so nothing opaque is ever painted over the page.
+ *
+ * It is also a slider (ScrollProgress.tsx): a transparent native range lies
+ * exactly over the rail, its thumb the size of the // mark, so the mark is
+ * drawn where the range's thumb is.
+ *
+ * It comes and goes through the boundary: a mask at 46.4° (the hero's angle)
+ * sweeps it in or out while data-moving is set.
+ */
+@property --reveal {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+.progress {
+  --track-w: 12rem;
+  --size: 0.75rem;
+  --mark-h: 0.75rem;
+  /* The `//` mark is 44:31 (src/components/brand/SlashMark). */
+  --mark-w: calc(var(--mark-h) * 44 / 31);
+  /* The mark's centre along the rail, placed as a range places its thumb: inside both ends. */
+  --center: calc(var(--mark-w) / 2 + var(--progress, 0) * (100% - var(--mark-w)));
+  /* The slider's hit height (WCAG 2.5.8 asks for at least 24px). */
+  --hit: 1.5rem;
+
+  position: fixed;
+  z-index: 40;
+  right: calc(var(--margin-right) - 0.5rem);
+  bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0 0.5rem;
+  color: var(--fore);
+  font-family: var(--font-mono);
+  font-size: var(--size);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  /* Opacity is never transitioned: presence is the boundary mask's job (data-moving). */
+  transition: color var(--dur-micro) linear;
+}
+
+/* Keyboard focus is on the range inside; the whole indicator shows it. */
+.progress:has(.input:focus-visible) {
+  outline: 2px solid var(--fore);
+  outline-offset: 2px;
+}
+
+/* ---------- Presence: in and out through the boundary ---------- */
+
+.progress[data-moving] {
+  mask-image: linear-gradient(133.6deg, #000 var(--reveal), transparent var(--reveal));
+  /* The tone it enters in is already the right one: no colour fade on top of the wipe. */
+  transition: none;
+}
+
+.progress[data-presence="shown"][data-moving] {
+  animation: indicator-in 620ms var(--ease-out) both;
+}
+
+.progress[data-presence="hidden"][data-moving] {
+  animation: indicator-out 420ms var(--ease-in-out) both;
+}
+
+/* Gone (once the wipe has run): invisible and takes no clicks, but keyboard focus still finds it. */
+.progress[data-presence="hidden"]:not([data-moving]) {
+  opacity: 0;
+}
+
+.progress[data-presence="hidden"] :is(.start, .end, .input, .grip) {
+  pointer-events: none;
+}
+
+@keyframes indicator-in {
+  from {
+    --reveal: 0%;
+  }
+  to {
+    --reveal: 100%;
+  }
+}
+
+@keyframes indicator-out {
+  from {
+    --reveal: 100%;
+  }
+  to {
+    --reveal: 0%;
+  }
+}
+
+/* 0 and 100 take you to the top and the bottom. */
+.start,
+.end {
+  color: var(--fore-muted);
+  cursor: pointer;
+  transition: color var(--dur-micro) linear;
+}
+
+.rail {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: var(--track-w);
+  height: var(--hit);
+}
+
+.track {
+  /* Half the mark plus a gap of 0.2em on either side. */
+  --gap: calc(var(--mark-w) / 2 + 0.2em);
+  --rest: var(--line);
+
+  position: relative;
+  width: 100%;
+  height: max(1px, calc(var(--mark-h) * 0.12));
+  background: linear-gradient(
+    to right,
+    currentColor max(0px, calc(var(--center) - var(--gap))),
+    transparent 0 calc(var(--center) + var(--gap)),
+    var(--rest) 0
+  );
+}
+
+.marker {
+  position: absolute;
+  left: var(--center);
+  top: 50%;
+  translate: -50% -50%;
+  transition: scale var(--dur-micro) var(--ease-out);
+}
+
+.slashes {
+  display: block;
+  height: var(--mark-h);
+  width: auto;
+}
+
+.readout {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.6rem);
+  translate: -50% 0.35rem;
+  opacity: 0;
+  color: var(--fore);
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-short) var(--ease-out),
+    translate var(--dur-short) var(--ease-out);
+}
+
+/* In use: the exact percentage, the labels in full, the rest of the track drawn firmer. */
+.progress:is(:hover, [data-dragging], :has(:focus-visible)) .readout {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+.progress:is(:hover, [data-dragging], :has(:focus-visible)) :is(.start, .end) {
+  color: var(--fore);
+}
+
+.progress:is(:hover, [data-dragging], :has(:focus-visible)) .track {
+  --rest: var(--fore-muted);
+}
+
+.progress[data-dragging] .marker {
+  scale: 1.18;
+}
+
+/* The range: invisible, exactly over the rail, its thumb exactly the mark. */
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.input::-webkit-slider-runnable-track {
+  height: 100%;
+}
+
+.input::-webkit-slider-thumb {
+  width: var(--mark-w);
+  height: var(--hit);
+  appearance: none;
+}
+
+.input::-moz-range-track {
+  height: 100%;
+}
+
+.input::-moz-range-thumb {
+  width: var(--mark-w);
+  height: var(--hit);
+  border: 0;
+  border-radius: 0;
+}
+
+.progress[data-dragging] .input {
+  cursor: grabbing;
+}
+
+/* A larger target around the mark, used only in the hairline (below). Sideways drags only: vertical ones scroll. */
+.grip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  translate: -50% -65%;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.progress[data-dragging] .grip {
+  cursor: grabbing;
+}
+
+/*
+ * Off the desktop stage (phones, tablets, squarer screens): a hairline along
+ * the bottom edge, mark only. Taps pass through it to the content; only the
+ * mark can be grabbed. The range still serves the keyboard.
+ */
+@media not all and (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .progress {
+    --track-w: 100%;
+    --mark-h: 0.625rem;
+    --hit: 0.875rem;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.2rem 0 calc(0.2rem + env(safe-area-inset-bottom));
+    pointer-events: none;
+  }
+
+  .start,
+  .end,
+  .readout {
+    display: none;
+  }
+
+  .rail {
+    flex: 1;
+  }
+
+  .input {
+    pointer-events: none;
+  }
+
+  .grip {
+    display: block;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .progress {
+    --track-w: calc(195 * var(--u));
+    --size: max(11px, calc(13 * var(--u)));
+    --mark-h: calc(12 * var(--u));
+
+    right: calc(var(--stage-x) + 59 * var(--u) - 0.5rem);
+    /* Centred on y 860 of 942: 82u above the stage's bottom edge. */
+    bottom: calc(82 * var(--u) + (100svh - 942 * var(--u)) * 0.6 - var(--hit) / 2);
+    gap: calc(15 * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .readout {
+    transition: opacity var(--dur-micro) linear;
+    translate: -50% 0;
+  }
+
+  .marker {
+    transition: none;
+  }
+
+  .progress[data-moving] {
+    animation: none;
+    mask-image: none;
+  }
+}

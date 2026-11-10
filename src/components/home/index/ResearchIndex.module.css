@@ -1,0 +1,245 @@
+/*
+ * The index: a narrow aside (heading, topic routes, the way to the archive)
+ * beside rows grouped by year. A row's ink copy sweeps in at the boundary
+ * angle on hover/focus; rows are about --row-h tall, which sets the slant.
+ */
+.section {
+  position: relative;
+  background: var(--ground);
+  color: var(--fore);
+  padding: var(--section-gap) var(--margin-right) 0 var(--margin-x);
+}
+
+.layout {
+  display: grid;
+  gap: 3rem;
+}
+
+.aside {
+  display: grid;
+  align-content: start;
+  gap: 1.75rem;
+}
+
+.heading {
+  font-size: var(--step-head);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-head);
+}
+
+.note {
+  max-width: 30ch;
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.topics {
+  display: grid;
+  margin: 0;
+}
+
+.topic {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.topic > span:first-child {
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.topic:hover > span:first-child,
+.topic:focus-visible > span:first-child {
+  transform: translateX(0.6rem);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.archive {
+  justify-self: end;
+  color: inherit;
+  text-decoration: none;
+}
+
+.years {
+  display: grid;
+  gap: 3rem;
+  min-width: 0;
+}
+
+.yearLabel {
+  font-size: clamp(2.5rem, 1.6rem + 3vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--tracking-head);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1rem;
+}
+
+.rows {
+  margin: 0;
+  border-top: 1.5px solid var(--fore);
+}
+
+.row {
+  border-bottom: 1px solid var(--line);
+}
+
+.rowLink {
+  --row-h: 5.25rem;
+  --closed: polygon(calc(100% + 0.953 * var(--row-h)) 0, calc(100% + 2 * var(--row-h)) 0, calc(100% + 2 * var(--row-h)) 100%, 100% 100%);
+  --open: polygon(0 0, calc(100% + 2 * var(--row-h)) 0, calc(100% + 2 * var(--row-h)) 100%, calc(-0.953 * var(--row-h)) 100%);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  min-height: var(--row-h);
+  padding-block: 1.1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.date,
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--fore-muted);
+  white-space: nowrap;
+}
+
+.date {
+  grid-column: 1;
+}
+
+.title {
+  grid-column: 1 / -1;
+  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.meta {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.meta + .meta {
+  display: none;
+}
+
+.ink {
+  position: absolute;
+  inset: 0 calc(-1 * var(--gutter));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  padding: 1.1rem var(--gutter);
+  background: var(--ink);
+  color: var(--paper);
+  clip-path: var(--closed);
+  transition: clip-path var(--dur-medium) var(--ease-in-out);
+  pointer-events: none;
+}
+
+.ink .date,
+.ink .meta {
+  color: var(--paper-dim);
+}
+
+.marker {
+  height: 0.85em;
+  width: auto;
+  color: var(--paper);
+}
+
+.rowLink:hover .ink,
+.rowLink:focus-visible .ink {
+  clip-path: var(--open);
+}
+
+.rowLink:focus-visible {
+  outline-offset: 0.5rem;
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .aside {
+    grid-column: 1 / span 3;
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    align-self: start;
+  }
+
+  .years {
+    grid-column: 5 / span 8;
+  }
+
+  .rowLink,
+  .ink {
+    grid-template-columns: 7.5rem minmax(0, 1fr) 11rem 4.5rem;
+    align-items: baseline;
+  }
+
+  .date,
+  .title,
+  .meta {
+    grid-row: 1;
+  }
+
+  .date {
+    grid-column: 1;
+  }
+
+  .title {
+    grid-column: 2;
+  }
+
+  .meta {
+    grid-column: 3;
+    white-space: normal;
+  }
+
+  .meta + .meta {
+    display: block;
+    grid-column: 4;
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink,
+  .topic > span:first-child {
+    transition: none;
+  }
+}

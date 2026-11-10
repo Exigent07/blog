@@ -1,0 +1,186 @@
+/*
+ * Navigation voice: Plex Mono at label size. Every entry reserves a gutter
+ * for the `//──` marker, which draws in (clip-path) on the current section
+ * and on hover or focus, so nothing reflows.
+ */
+.toc {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  line-height: 1.4;
+}
+
+/* ---------- Phones and tablets: a disclosure above the prose ---------- */
+
+.compact {
+  border-block: 1px solid var(--line);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  list-style: none;
+  cursor: pointer;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A plus that turns into a minus when open. */
+.toggle {
+  position: relative;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.toggle::before,
+.toggle::after {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 0.75px) 0 auto;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.toggle::after {
+  transform: rotate(90deg);
+}
+
+.compact[open] .toggle::after {
+  transform: rotate(0deg);
+}
+
+.compact > .list {
+  padding-bottom: 1rem;
+}
+
+.panel {
+  display: none;
+}
+
+/* ---------- Entries ---------- */
+
+.list,
+.sublist {
+  display: grid;
+}
+
+.link {
+  --gutter: 2.9em;
+
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, 1fr);
+  padding-block: 0.4em;
+  color: var(--fore-muted);
+  text-decoration: none;
+}
+
+.sublist .text {
+  padding-left: 1.4em;
+}
+
+.link[aria-current="true"] {
+  color: var(--fore);
+  font-weight: 500;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  width: calc(var(--gutter) - 0.75em);
+  height: 1lh;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-short) var(--ease-out);
+}
+
+.slashes {
+  flex: none;
+  width: auto;
+  height: 0.72em;
+}
+
+.rule {
+  flex: 1;
+  height: 1.5px;
+  background: currentColor;
+}
+
+.link[aria-current="true"] .marker,
+.link:focus-visible .marker {
+  clip-path: inset(0);
+}
+
+.link:focus-visible {
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    color: var(--fore);
+  }
+
+  .link:hover .marker {
+    clip-path: inset(0);
+  }
+}
+
+@media (pointer: coarse) {
+  .link {
+    padding-block: 0.8em;
+  }
+}
+
+/* ---------- Desktop: a sticky column beside the prose ---------- */
+
+@media (min-width: 64rem) {
+  .toc {
+    /* Room for the fixed scroll progress (src/components/chrome/ScrollProgress) below the column. */
+    --progress-clearance: 5rem;
+
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+  }
+
+  .compact {
+    display: none;
+  }
+
+  .panel {
+    display: block;
+    max-height: calc(100svh - var(--header-height) - 2rem - var(--progress-clearance));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .label {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--line);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--fore-muted);
+  }
+}
+
+/* On the stage the progress sits 76u above the stage's bottom edge. */
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .toc {
+    --progress-clearance: calc(130 * var(--u) + (100svh - 942 * var(--u)) * 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker,
+  .toggle::before,
+  .toggle::after {
+    transition: none;
+  }
+}

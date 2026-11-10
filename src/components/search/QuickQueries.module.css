@@ -1,0 +1,95 @@
+/*
+ * Suggested searches: mono values on a thin rule, which brightens and extends
+ * to full weight on hover or focus (the rule, not the text, carries the
+ * affordance, as in the bracketed action's line).
+ */
+/* The label keeps its own column; the values wrap beside it. */
+.quick {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 1.25rem;
+}
+
+.label,
+.query {
+  font-family: var(--font-mono);
+  font-size: var(--quick-size, var(--step-label));
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--fore-muted);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+}
+
+.query {
+  position: relative;
+  padding-block: 0.4rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Just under the text (half its 1.2 line box below the centre), however tall the hit area is. */
+.query::before,
+.query::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 0.6em + 0.15rem);
+  pointer-events: none;
+}
+
+.query::before {
+  height: 1px;
+  background: var(--fore-muted);
+}
+
+.query::after {
+  height: 2px;
+  background: var(--fore);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.query:focus-visible::after {
+  transform: none;
+}
+
+@media (hover: hover) {
+  .query:hover::after {
+    transform: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .query {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+}
+
+/* Phones: two rows of suggestions at most, so the list stays in view. */
+@media (max-width: 40rem) {
+  .list > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .query::after {
+    transition: none;
+  }
+}

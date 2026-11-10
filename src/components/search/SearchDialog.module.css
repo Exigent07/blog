@@ -1,0 +1,280 @@
+/*
+ * Search turns the whole viewport into ink territory. The boundary (46.4°,
+ * dx/dy = 0.953) sweeps in from the right with the mobile menu's polygon
+ * math and leaves the same way; reduced motion makes both instant.
+ *
+ * The top row takes the header's place (same height, rule at the same y) and
+ * everything below aligns with --margin-x / --margin-right, so the page grid
+ * holds while the territory changes.
+ */
+.dialog {
+  /* The region right of a line whose top is at X and bottom at X − 0.953 × height. */
+  --closed: polygon(calc(100% + 95.3dvh) 0, calc(100% + 200dvh) 0, calc(100% + 200dvh) 100%, 100% 100%);
+  --opened: polygon(0 0, calc(100% + 200dvh) 0, calc(100% + 200dvh) 100%, -95.3dvh 100%);
+
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background: var(--ground);
+  color: var(--fore);
+  overscroll-behavior: contain;
+  clip-path: var(--closed);
+  transition:
+    clip-path var(--dur-medium) var(--ease-in-out),
+    overlay var(--dur-medium) allow-discrete,
+    display var(--dur-medium) allow-discrete;
+}
+
+.dialog[open] {
+  clip-path: var(--opened);
+}
+
+/* Closing for a navigation: the route transition takes over (see leave() in SearchDialog). */
+.dialog[data-exit="instant"]:not([open]) {
+  transition: none;
+}
+
+@starting-style {
+  .dialog[open] {
+    clip-path: var(--closed);
+  }
+}
+
+.dialog::backdrop {
+  background: transparent;
+}
+
+.panel {
+  --pad-left: max(var(--margin-x), env(safe-area-inset-left));
+  --pad-right: max(var(--margin-right), env(safe-area-inset-right));
+
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  height: 100%;
+  padding: env(safe-area-inset-top) var(--pad-right) 0 var(--pad-left);
+}
+
+/* The header band: label left, close right, the rule where the header's is. */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--header-height);
+  margin-inline: calc(-1 * var(--pad-left)) calc(-1 * var(--pad-right));
+  padding-inline: var(--pad-left) var(--pad-right);
+  border-bottom: 1px solid var(--line);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.square {
+  flex: none;
+  width: 0.75em;
+  height: 0.75em;
+  background: currentColor;
+}
+
+.close {
+  --ba-size: var(--step-data);
+
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+/* "Esc" only where there is a keyboard to press it; touch reads "Close". */
+.keyLabel {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .keyLabel {
+    display: inline;
+  }
+
+  .touchLabel {
+    display: none;
+  }
+}
+
+.form {
+  margin-top: clamp(1.75rem, 0.75rem + 3vw, 3.5rem);
+}
+
+/* No box: a hairline under the text, which becomes a full paper line on focus. */
+.field {
+  position: relative;
+}
+
+.field::before,
+.field::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.field::before {
+  height: 1px;
+  background: var(--line);
+}
+
+.field::after {
+  height: 2px;
+  background: var(--fore);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.field:focus-within::after {
+  transform: none;
+}
+
+.input {
+  --input-size: clamp(2.5rem, 1.25rem + 5.5vw, 6.5rem);
+
+  display: block;
+  width: 100%;
+  padding: 0 0 0.12em;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  appearance: none;
+  font-family: var(--font-text);
+  font-size: var(--input-size);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-head);
+  color: var(--fore);
+  caret-color: var(--fore);
+}
+
+/* The field's paper line is the focus indicator; an outline box would contradict the open baseline. */
+.input:focus-visible {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--fore-muted);
+  opacity: 1;
+}
+
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  appearance: none;
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 2.5rem;
+  min-height: 2.75rem;
+  margin-top: 0.75rem;
+}
+
+.count {
+  line-height: 1.2;
+}
+
+.clear {
+  --ba-size: var(--step-label);
+
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+/* Results scroll here; the region spans the full width so its scrollbar sits at the viewport edge. */
+.body {
+  min-height: 0;
+  margin: 0.5rem calc(-1 * var(--pad-right)) 0 calc(-1 * var(--pad-left));
+  padding: 0.25rem var(--pad-right) calc(3rem + env(safe-area-inset-bottom)) var(--pad-left);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Short viewports (landscape phones): the whole dialog scrolls instead. */
+@media (max-height: 30rem) {
+  .dialog {
+    overflow-y: auto;
+  }
+
+  .panel {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .body {
+    overflow: visible;
+  }
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .label {
+    gap: calc(15 * var(--u));
+    font-size: calc(19 * var(--u));
+  }
+
+  .square {
+    width: calc(16 * var(--u));
+    height: calc(16 * var(--u));
+  }
+
+  .close {
+    --ba-size: calc(19 * var(--u));
+  }
+
+  .form {
+    margin-top: calc(76 * var(--u));
+  }
+
+  .input {
+    --input-size: calc(120 * var(--u));
+  }
+
+  .status {
+    --quick-size: max(13px, calc(15 * var(--u)));
+
+    margin-top: calc(18 * var(--u));
+  }
+
+  .count {
+    font-size: max(13px, calc(15 * var(--u)));
+  }
+
+  .clear {
+    --ba-size: max(13px, calc(15 * var(--u)));
+  }
+
+  .body {
+    margin-top: calc(24 * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .field::after {
+    transition: none;
+  }
+}

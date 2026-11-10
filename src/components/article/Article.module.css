@@ -1,0 +1,47 @@
+/*
+ * The article page. Horizontal padding is the header's own (--margin-x and
+ * --margin-right: 148u and 90u on the desktop stage), so the title, the
+ * prose and the header's logo share one edge.
+ */
+.page {
+  /* The contents column, shared by the header grid and the body grid. */
+  --toc-w: clamp(15rem, 22vw, 20rem);
+  --toc-gap: clamp(3rem, 5vw, 5rem);
+
+  position: relative;
+  /* Holds the viewport while an article streams in after a client navigation. */
+  min-height: 100svh;
+  padding: calc(var(--header-height) + 2.25rem) var(--margin-right) clamp(5rem, 3rem + 6vw, 9rem) var(--margin-x);
+  background: var(--ground);
+  color: var(--fore);
+}
+
+/*
+ * Phones and tablets: header, contents disclosure, prose, byline, in order.
+ * Desktop: the contents are a sticky column that starts beside the title,
+ * so the article's structure is visible from the first screen. The header,
+ * contents and prose place themselves in these areas.
+ */
+.article {
+  display: grid;
+  row-gap: clamp(2.5rem, 1.75rem + 2.5vw, 4rem);
+}
+
+@media (min-width: 64rem) {
+  .article {
+    grid-template-columns: minmax(0, 1fr) var(--toc-w);
+    grid-template-areas:
+      "header toc"
+      "body toc"
+      "byline byline";
+    column-gap: var(--toc-gap);
+    align-items: start;
+  }
+}
+
+/* Desktop stage: the label sits where the hero's label does, 156u from the top. */
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .page {
+    padding-top: calc(156 * var(--u));
+  }
+}

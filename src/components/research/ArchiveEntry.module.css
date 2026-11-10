@@ -1,0 +1,372 @@
+/*
+ * One row of the archive index. Layouts follow the archive container
+ * (ResearchArchive.module.css defines it and the shared --archive-columns):
+ *
+ * - phone (< 40rem): one column; date and read time share the first line.
+ * - medium (40–66rem): date | title | read time, then summary and facts.
+ * - wide (≥ 66rem): date | title | topic | technique | read time; the
+ *   summary waits under the facts, reserved but transparent until the ink
+ *   copy reveals it.
+ *
+ * The ink copy covers the paper copy exactly and is clipped by a polygon
+ * whose leading edge is the boundary, x(y) = x0 − 0.953·y. The edge spans a
+ * fixed --sweep-h taller than any row, so its angle is exact whatever the
+ * row's height, and its two points move by the same amount, so the angle
+ * holds for the whole transition.
+ */
+.row {
+  --bleed: var(--margin-x);
+  --pad-y: 1.5rem;
+  --title-size: 1.625rem;
+  --data-size: var(--step-label);
+  --sweep-h: 26rem;
+  --sweep-dx: calc(var(--sweep-h) * var(--boundary-slope));
+  --sweep-closed: polygon(
+    calc(var(--sweep-dx) * -1) 0,
+    0 0,
+    calc(var(--sweep-dx) * -1) var(--sweep-h),
+    calc(var(--sweep-dx) * -1) var(--sweep-h)
+  );
+  --sweep-open: polygon(
+    calc(var(--sweep-dx) * -1) 0,
+    calc(100% + var(--sweep-dx)) 0,
+    100% var(--sweep-h),
+    calc(var(--sweep-dx) * -1) var(--sweep-h)
+  );
+
+  position: relative;
+  isolation: isolate;
+  margin-inline: calc(var(--bleed) * -1);
+  padding: var(--pad-y) var(--bleed);
+}
+
+/* Hairlines between rows, on the content edges rather than the bleed. */
+.row + .row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--bleed);
+  right: var(--bleed);
+  height: 1px;
+  background: var(--line);
+}
+
+.ink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: inherit;
+  background: var(--ground);
+  color: var(--fore);
+  clip-path: var(--sweep-closed);
+  pointer-events: none;
+  user-select: none;
+  transition: clip-path var(--dur-short) var(--ease-out);
+}
+
+.row:has(.link:focus-visible) .ink {
+  clip-path: var(--sweep-open);
+  transition-duration: var(--dur-medium);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row:hover .ink {
+    clip-path: var(--sweep-open);
+    transition-duration: var(--dur-medium);
+  }
+}
+
+/* ---------- Content (phone first) ---------- */
+
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "date time"
+    "main main"
+    "summary summary"
+    "facts facts";
+  align-items: baseline;
+  column-gap: 1rem;
+}
+
+.side {
+  display: contents;
+}
+
+.date,
+.time,
+.factValue {
+  font-family: var(--font-mono);
+  font-size: var(--data-size);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  grid-area: date;
+  position: relative;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.time {
+  grid-area: time;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+  margin-top: 0.875rem;
+}
+
+.title {
+  font-size: var(--title-size);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The title's link covers the whole row, above the ink copy. */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+/* Keyboard focus also sweeps the row to ink, so the ring is paper, inset. */
+.link:focus-visible::after {
+  outline: 2px solid var(--paper);
+  outline-offset: -0.5rem;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.summary {
+  grid-area: summary;
+  max-width: 60ch;
+  margin-top: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.facts {
+  grid-area: facts;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.75rem;
+  margin: 1.125rem 0 0;
+}
+
+.fact {
+  display: grid;
+  align-content: start;
+  gap: 0.375rem;
+  padding-right: 1rem;
+}
+
+.fact + .fact {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+}
+
+.factLabel {
+  font-family: var(--font-mono);
+  font-size: var(--data-size);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.factValue {
+  margin: 0;
+}
+
+/* //── : after the date on phones, under it once the date has a column. */
+.marker {
+  --marker-h: 0.8em;
+
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.75rem);
+  display: flex;
+  align-items: flex-end;
+  width: 4.5rem;
+  height: var(--marker-h);
+  translate: 0 -50%;
+}
+
+.markerSlashes {
+  flex: none;
+  width: auto;
+  height: 100%;
+}
+
+.markerLine {
+  flex: 1;
+  height: max(1.5px, calc(var(--marker-h) * 0.18));
+  margin-left: calc(var(--marker-h) * -0.05);
+  margin-bottom: calc(var(--marker-h) * 0.38);
+  background: currentColor;
+  transform-origin: left center;
+  transform: scaleX(0.25);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.row:has(.link:focus-visible) .markerLine {
+  transform: none;
+  transition-delay: var(--dur-micro);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row:hover .markerLine {
+    transform: none;
+    transition-delay: var(--dur-micro);
+  }
+}
+
+/* ---------- Medium: the date gets its own column ---------- */
+
+@container research-archive (min-width: 40rem) {
+  .row {
+    --bleed: 1.25rem;
+    --pad-y: 1.625rem;
+    --title-size: clamp(1.75rem, 1rem + 2.2cqi, 2.125rem);
+  }
+
+  .entry {
+    grid-template-columns: [date-start] 7rem [date-end main-start] minmax(0, 1fr) [main-end time-start] auto [time-end];
+    grid-template-areas:
+      "date main time"
+      ". summary ."
+      ". facts .";
+    column-gap: var(--archive-gap);
+  }
+
+  .main {
+    margin-top: 0;
+  }
+
+  .marker {
+    top: calc(100% + 0.9em);
+    left: 0;
+    width: 100%;
+    translate: none;
+  }
+}
+
+/* ---------- Wide: every field on the shared columns ---------- */
+
+@container research-archive (min-width: 66rem) {
+  .row {
+    --bleed: 1.5rem;
+    --pad-y: 1.75rem;
+    --title-size: clamp(1.875rem, 3cqi, 2.5rem);
+  }
+
+  .entry {
+    grid-template-columns: var(--archive-columns);
+    grid-template-areas: none;
+  }
+
+  /* Drop the narrower layouts' named areas: their row names do not exist here. */
+  .date,
+  .main,
+  .facts,
+  .time,
+  .summary {
+    grid-area: auto;
+  }
+
+  .date {
+    grid-column: date;
+  }
+
+  .main {
+    grid-column: title;
+  }
+
+  .side {
+    display: grid;
+    grid-column: topic-start / time-end;
+    grid-template-columns: [topic-start] var(--archive-side);
+    column-gap: var(--archive-gap);
+    align-items: baseline;
+    row-gap: 1rem;
+  }
+
+  .facts {
+    grid-column: topic-start / technique-end;
+    display: grid;
+    grid-template-columns: var(--col-topic) var(--col-technique);
+    column-gap: var(--archive-gap);
+    margin: 0;
+  }
+
+  .fact,
+  .fact + .fact {
+    padding: 0;
+    border: 0;
+  }
+
+  /* The column heads above each year label these values visually. */
+  .factLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .time {
+    grid-column: time;
+    grid-row: 1;
+  }
+
+  .summary {
+    grid-column: topic-start / time-end;
+    grid-row: 2;
+    margin-top: 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+}
+
+/* Pointer devices read the summary in the ink copy, revealed by the sweep. */
+@media (hover: hover) and (pointer: fine) {
+  @container research-archive (min-width: 66rem) {
+    .row > .entry .summary {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink,
+  .markerLine {
+    transition: none;
+  }
+}

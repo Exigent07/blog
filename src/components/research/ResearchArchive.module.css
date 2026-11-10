@@ -1,0 +1,83 @@
+/*
+ * The archive page. Horizontal padding aligns with the header (content edge
+ * at 148u, right margin 90u on the desktop stage). The inner box is the
+ * container every archive layout queries, and it defines the columns shared
+ * by the intro, the controls and each row of the index:
+ *
+ *   date | title (fluid) | topic | technique | read time
+ */
+.page {
+  position: relative;
+  padding: calc(var(--header-height) + clamp(2.5rem, 1rem + 4.5vw, 5.5rem)) var(--margin-right)
+    clamp(6rem, 4rem + 6vw, 11rem) var(--margin-x);
+}
+
+.inner {
+  --archive-gap: clamp(1.25rem, 0.5rem + 1.5vw, 2rem);
+  --col-date: 7rem;
+  --col-topic: 11rem;
+  --col-technique: 11rem;
+  --col-time: 4rem;
+  /*
+   * The right-hand columns after their first line name. Rows and year heads
+   * nest them as `[topic-start] var(--archive-side)`: plain nested grids,
+   * because Chrome leaves baseline offsets out of a subgrid's track size.
+   */
+  --archive-side: var(--col-topic) [topic-end technique-start] var(--col-technique) [technique-end time-start]
+    var(--col-time) [time-end];
+  --archive-columns: [date-start] var(--col-date) [date-end title-start] minmax(0, 1fr) [title-end topic-start]
+    var(--archive-side);
+
+  container: research-archive / inline-size;
+}
+
+.intro {
+  display: grid;
+  row-gap: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem);
+}
+
+/*
+ * "Research" measures 3.84em: on phones it spans the column; wider screens
+ * use the display step. The negative margin puts the R's stem on the
+ * content edge, as the hero does for its capitals.
+ */
+.title {
+  font-size: max(var(--step-display), min(100cqi / 3.95, 8rem));
+  margin-left: -0.051em;
+}
+
+.description {
+  max-width: 30ch;
+}
+
+/*
+ * Wide: the word on the index's left columns; the description and the
+ * figures on its right columns, the description's first line level with the
+ * word's cap height. The word is capped so it never reaches the figures.
+ */
+@container research-archive (min-width: 66rem) {
+  .intro {
+    grid-template-columns: var(--archive-columns);
+    column-gap: var(--archive-gap);
+    row-gap: 1.75rem;
+    align-items: start;
+  }
+
+  .title {
+    grid-column: date-start / title-end;
+    grid-row: 1 / span 2;
+    font-size: min(var(--step-display), (100cqi - 33rem) / 4);
+  }
+
+  .description {
+    grid-column: topic-start / time-end;
+    max-width: 38ch;
+    margin-top: 0.3rem;
+    font-size: var(--step-body);
+    line-height: 1.45;
+  }
+
+  .stats {
+    grid-column: topic-start / time-end;
+  }
+}

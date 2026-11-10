@@ -1,0 +1,135 @@
+/*
+ * The hero's boundary, static. Phones, tablets and squarer screens: the copy
+ * sits at the top and the ink territory is a corner in the room left below it,
+ * so the two never overlap. Desktop stage: the territory takes the lower right
+ * of the whole screen, beside the copy, as on the hero.
+ */
+.page {
+  --h: max(100svh, 36rem);
+
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(9rem, 1fr);
+  min-height: var(--h);
+  overflow: clip;
+  background: var(--ground);
+  color: var(--fore);
+}
+
+.room {
+  position: relative;
+  grid-row: 2;
+  /* The corner's legs derive from the room's height (100cqh). */
+  container-type: size;
+}
+
+.territory {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  /* From the room's top-right corner down the boundary (x = −0.953·y) to the bottom edge. */
+  clip-path: polygon(100% 0, 100% 100%, calc(100% - 0.953 * 100cqh) 100%);
+}
+
+.content {
+  position: relative;
+  grid-row: 1;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 1.75rem;
+  padding: calc(var(--header-height) + 2.5rem) var(--margin-right) 2.5rem var(--margin-x);
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .page {
+    grid-template-rows: 1fr;
+  }
+
+  /* Placed auto, an absolute grid child takes the whole page as its containing block. */
+  .room {
+    position: absolute;
+    inset: 0;
+    grid-row: auto;
+    container-type: normal;
+  }
+
+  /* The boundary meets the right edge 45% down and the bottom edge at 100% − 0.953 × 55% of the height. */
+  .territory {
+    clip-path: polygon(
+      calc(100% + 0.953 * var(--h) * 0.45) 0,
+      calc(100% + 0.953 * var(--h) * 0.45) 100%,
+      calc(100% - 0.953 * var(--h) * 0.55) 100%
+    );
+  }
+
+  .content {
+    align-content: center;
+    min-height: var(--h);
+    padding: calc(var(--header-height) + 2rem) var(--margin-right) 4rem var(--margin-x);
+  }
+}
+
+.code {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.square {
+  width: 0.75em;
+  height: 0.75em;
+  background: currentColor;
+}
+
+.title {
+  font-size: var(--step-display);
+  line-height: 0.86;
+  letter-spacing: var(--tracking-display);
+  margin-left: -0.05em;
+  max-width: 8ch;
+}
+
+.text {
+  max-width: 34ch;
+  font-size: var(--step-lead);
+  line-height: 1.35;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2.5rem;
+  margin: 1rem 0 0;
+}
+
+/* The primary action on its own row, the two ways back beneath it: the block stays as narrow as the copy. */
+.actions > li:first-child {
+  flex-basis: 100%;
+}
+
+.primary {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}

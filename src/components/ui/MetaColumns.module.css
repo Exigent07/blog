@@ -1,0 +1,78 @@
+/*
+ * Phones (and the "grid" layout at every width): a 2-column grid with a
+ * hairline before the second column. Wider "row" layout: one row, hairlines
+ * between every column.
+ *
+ * Parents tune the component through --meta-label, --meta-value,
+ * --meta-gap-before, --meta-gap-after and --meta-row-gap. They are read with
+ * fallbacks and never declared here, so a parent's values always win.
+ */
+.meta {
+  --meta-rule: max(1px, calc(var(--meta-value, var(--step-data)) * 0.09));
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 1.25rem;
+  margin: 0;
+}
+
+.item {
+  display: grid;
+  align-content: start;
+  gap: var(--meta-row-gap, 0.4em);
+  min-width: 0;
+}
+
+.item:nth-child(2n) {
+  padding-left: 1rem;
+  border-left: var(--meta-rule) solid var(--line);
+}
+
+@media (min-width: 40rem) {
+  .meta[data-layout="row"] {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .meta[data-layout="row"] .item {
+    padding: 0 var(--meta-gap-before, 1.25rem) 0 0;
+    border-left: 0;
+  }
+
+  .meta[data-layout="row"] .item + .item {
+    padding-left: var(--meta-gap-after, 1.25rem);
+    border-left: var(--meta-rule) solid var(--line);
+  }
+
+  .meta[data-layout="grid"] .item:nth-child(2n) {
+    padding-left: var(--meta-gap-after, 1.25rem);
+  }
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--meta-label, var(--step-label));
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--meta-value, var(--step-data));
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 40rem) {
+  .meta[data-layout="row"] .value {
+    white-space: nowrap;
+  }
+}

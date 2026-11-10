@@ -1,0 +1,121 @@
+.toggle {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.75rem 0 0.75rem 1rem;
+  margin-block: -0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .toggle {
+    display: none;
+  }
+}
+
+/*
+ * Opens as ink territory sweeping in at the boundary angle (46.4°) from the
+ * top right, and leaves the same way. Falls back to an instant open where
+ * @starting-style is unsupported.
+ */
+.dialog {
+  /* The region right of a line whose top is at X and bottom at X − 0.953 × height. */
+  --closed: polygon(calc(100% + 95.3dvh) 0, calc(100% + 200dvh) 0, calc(100% + 200dvh) 100%, 100% 100%);
+  --opened: polygon(0 0, calc(100% + 200dvh) 0, calc(100% + 200dvh) 100%, -95.3dvh 100%);
+
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  background: var(--ground);
+  color: var(--fore);
+  overscroll-behavior: contain;
+  clip-path: var(--closed);
+  transition:
+    clip-path var(--dur-medium) var(--ease-in-out),
+    overlay var(--dur-medium) allow-discrete,
+    display var(--dur-medium) allow-discrete;
+}
+
+.dialog[open] {
+  clip-path: var(--opened);
+}
+
+@starting-style {
+  .dialog[open] {
+    clip-path: var(--closed);
+  }
+}
+
+.dialog::backdrop {
+  background: transparent;
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100%;
+  padding: 1.25rem var(--margin-x) calc(1.5rem + env(safe-area-inset-bottom));
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: calc(var(--header-height) - 1.25rem);
+}
+
+.wordmark {
+  font-weight: 700;
+  font-size: 1.375rem;
+  letter-spacing: -0.035em;
+}
+
+.close {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.75rem 0 0.75rem 1rem;
+}
+
+.list {
+  align-self: center;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 14vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-display);
+  text-decoration: none;
+  padding-block: 0.2rem;
+}
+
+.link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.12em;
+}
+
+.contact {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  color: var(--fore-muted);
+  text-decoration: none;
+  padding-block: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    transition: none;
+  }
+}

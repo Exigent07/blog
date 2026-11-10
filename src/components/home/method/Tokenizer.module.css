@@ -1,0 +1,219 @@
+/* An ink instrument inside the paper section: controls, then the two readings. */
+.instrument {
+  display: grid;
+  gap: 3rem;
+  margin-top: calc(var(--section-gap) * 0.6);
+  padding: clamp(1.5rem, 1rem + 3vw, 4.5rem);
+  background: var(--ground);
+  color: var(--fore);
+}
+
+.copy {
+  display: grid;
+  align-content: start;
+  gap: 1.75rem;
+}
+
+.title {
+  font-size: clamp(1.75rem, 1.2rem + 1.8vw, 3rem);
+  line-height: 1;
+  letter-spacing: var(--tracking-head);
+}
+
+.lede {
+  max-width: 44ch;
+}
+
+.lede code {
+  font-size: 0.9em;
+}
+
+.legend {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.separators {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+}
+
+.option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.25rem 5.5rem 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.option:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+
+/* The radio becomes the brand's square: hollow, then filled when chosen. */
+.option input {
+  appearance: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin: 0;
+  border: 1.5px solid currentColor;
+  transition: background-color var(--dur-micro) linear;
+}
+
+.option input:checked {
+  background: currentColor;
+}
+
+.option input:focus-visible {
+  outline: none;
+}
+
+.option:has(input:focus-visible) {
+  outline: 2px solid var(--fore);
+  outline-offset: 2px;
+}
+
+.optionCode {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+}
+
+.optionName {
+  color: var(--fore-muted);
+  transition: color var(--dur-micro) linear;
+}
+
+.option:has(input:checked) .optionName,
+.option:hover .optionName {
+  color: var(--fore);
+}
+
+.field {
+  display: block;
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--fore);
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  border-radius: 0;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--fore);
+  outline-offset: 4px;
+}
+
+.output {
+  display: grid;
+  align-content: start;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.row {
+  display: grid;
+  gap: 0.85rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.rowLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.count {
+  color: var(--fore);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.attribute {
+  font-size: clamp(0.9375rem, 0.8rem + 0.5vw, 1.25rem);
+  overflow-wrap: anywhere;
+}
+
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.token {
+  padding: 0.45em 0.75em;
+  border: 1px solid var(--fore-muted);
+  font-family: var(--font-mono);
+  font-size: clamp(0.9375rem, 0.8rem + 0.5vw, 1.25rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* The class the merge created: it crossed the boundary, so it inverts. */
+.token[data-crossed] {
+  background: var(--fore);
+  color: var(--ground);
+  border-color: var(--fore);
+}
+
+.char {
+  margin-inline: 0.15em;
+  padding: 0.05em 0.3em;
+  border: 1px dashed currentColor;
+  font-size: 0.7em;
+  text-decoration: none;
+  vertical-align: 0.15em;
+}
+
+.verdict {
+  font-size: var(--step-lead);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  max-width: 40ch;
+}
+
+@media (min-width: 64rem) {
+  .instrument {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .copy {
+    grid-column: 1 / span 5;
+  }
+
+  .output {
+    grid-column: 7 / span 6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option input,
+  .optionName {
+    transition: none;
+  }
+}

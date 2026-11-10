@@ -1,0 +1,87 @@
+/* Phone/tablet sizes; the desktop stage overrides with reference units. */
+.logo {
+  --mark-h: 1.25rem;
+  --line-w: 1.5rem;
+  --gap-a: 0.75rem;
+  --gap-b: 0.75rem;
+  --word-size: 1.375rem;
+
+  display: inline-flex;
+  align-items: center;
+  color: var(--fore);
+  text-decoration: none;
+}
+
+.markBox {
+  position: relative;
+  height: var(--mark-h);
+  flex: none;
+}
+
+.mark {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* viewBox -26 -20 96 71 around the 44 × 31 mark */
+.aura {
+  position: absolute;
+  left: calc(-26 / 44 * 100%);
+  top: calc(-20 / 31 * 100%);
+  width: calc(96 / 44 * 100%);
+  height: calc(71 / 31 * 100%);
+  max-width: none;
+  color: var(--fore);
+  opacity: 0.5;
+  transition:
+    opacity var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+  transform-origin: calc(48 / 96 * 100%) calc(35.5 / 71 * 100%);
+}
+
+.line {
+  width: var(--line-w);
+  height: max(1.5px, calc(var(--mark-h) * 2.5 / 31));
+  margin-inline: var(--gap-a) var(--gap-b);
+  background: currentColor;
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.wordmark {
+  font-weight: 700;
+  font-size: var(--word-size);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  /* Optical centring: the x-height, not the ascender, sits on the axis. */
+  translate: 0 0.06em;
+}
+
+@media (hover: hover) {
+  .logo:hover .aura {
+    opacity: 0.7;
+    transform: scale(1.06);
+  }
+
+  .logo:hover .line {
+    transform: scaleX(1.18);
+  }
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .logo {
+    --mark-h: calc(31 * var(--u));
+    --line-w: calc(59 * var(--u));
+    --gap-a: calc(21 * var(--u));
+    --gap-b: calc(23 * var(--u));
+    --word-size: calc(35 * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura,
+  .line {
+    transition: none;
+  }
+}

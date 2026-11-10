@@ -1,0 +1,126 @@
+/*
+ * Set on the element: --chars (title length) and --longest (longest word).
+ * The title is as large as --title-max allows while fitting roughly
+ * --fit-lines lines (Host Grotesk Bold averages ≤ 0.5em per character at
+ * display tracking) and never letting its longest word overflow.
+ */
+.header {
+  --title-max: 3rem;
+  --fit-lines: 3.4;
+
+  container-type: inline-size;
+}
+
+/* The hero's label anatomy: square and kind, then a sublabel (here, the route back) under the text. */
+.top {
+  display: grid;
+  grid-template-columns: 0.8em auto;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.8em;
+  row-gap: 0.55em;
+  font-size: var(--step-data);
+}
+
+.kind {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.square {
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+}
+
+/* A quiet route back; the padding gives a 44px target without moving the type. */
+.archive {
+  grid-column: 2;
+  justify-self: start;
+  padding-block: 0.875rem;
+  margin-block: -0.875rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4em;
+}
+
+.archive:hover {
+  color: var(--fore);
+}
+
+.title {
+  margin-top: clamp(1.75rem, 1rem + 2.5vw, 3rem);
+  /* Straight stems sit on the content edge; round capitals overshoot it (as in the hero). */
+  margin-left: -0.051em;
+  font-size: clamp(
+    2rem,
+    min(100cqi * var(--fit-lines) / (var(--chars) * 0.5), 100cqi / (var(--longest) * 0.6)),
+    var(--title-max)
+  );
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: var(--tracking-display);
+}
+
+.deck {
+  max-width: 26em;
+  margin-top: clamp(1rem, 0.75rem + 0.8vw, 1.75rem);
+  font-size: var(--step-lead);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Facts, then the disclosure outcome: side by side when they fit, otherwise one row each. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+  margin-top: clamp(2rem, 1.25rem + 2vw, 3.25rem);
+}
+
+/* Phones: each group is MetaColumns' two-column grid; full width keeps both grids' columns aligned. */
+.meta > * {
+  flex: 1 1 100%;
+}
+
+@media (min-width: 40rem) {
+  .header {
+    --title-max: 5rem;
+  }
+
+  .meta > * {
+    flex: 0 1 auto;
+  }
+}
+
+/* Beside the contents column (grid areas in Article.module.css). */
+@media (min-width: 64rem) {
+  .header {
+    --title-max: 6.5rem;
+    --fit-lines: 2.6;
+
+    grid-area: header;
+  }
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .header {
+    --title-max: calc(136 * var(--u));
+  }
+
+  .top {
+    font-size: calc(19 * var(--u));
+  }
+}

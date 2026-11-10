@@ -1,0 +1,57 @@
+.spine {
+  display: none;
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--stage-x) + 40 * var(--u));
+    display: block;
+    width: calc(16 * var(--u));
+    pointer-events: none;
+  }
+
+  /* The rule runs the full height; the label sits on it with ground behind. */
+  .spine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - max(0.5px, calc(0.75 * var(--u))));
+    width: max(1px, calc(1.5 * var(--u)));
+    background: var(--line);
+  }
+
+  .label {
+    position: sticky;
+    top: calc(50svh - 90 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(12 * var(--u));
+    padding-block: calc(14 * var(--u));
+    margin-top: calc(160 * var(--u));
+    background: var(--ground);
+  }
+
+  .text {
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    font-family: var(--font-mono);
+    font-size: calc(17 * var(--u));
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--fore);
+  }
+
+  .square {
+    width: calc(13 * var(--u));
+    height: calc(14 * var(--u));
+    background: var(--fore);
+  }
+}

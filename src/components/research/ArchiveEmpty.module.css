@@ -1,0 +1,40 @@
+.empty {
+  display: grid;
+  justify-items: start;
+  row-gap: 1.25rem;
+  margin-top: clamp(2.5rem, 1.75rem + 2.5vw, 4.5rem);
+  padding-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  border-top: 1.5px solid var(--fore);
+}
+
+.statement {
+  max-width: 24ch;
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: var(--tracking-head);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  max-width: 44ch;
+  font-size: var(--step-body);
+}
+
+.action {
+  margin-top: 0.75rem;
+  min-height: 2.75rem;
+  text-align: left;
+}
+
+@container research-archive (min-width: 66rem) {
+  .empty {
+    grid-template-columns: var(--archive-columns);
+    column-gap: var(--archive-gap);
+  }
+
+  .empty > * {
+    grid-column: title-start / time-end;
+  }
+}

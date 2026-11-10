@@ -1,0 +1,490 @@
+/*
+ * The hero. On the desktop stage every coordinate is the reference's own
+ * (reference.png, 1670 × 942), scaled uniformly by u and offset by
+ * (--stage-x, --stage-y), so every relationship to the diagonal is exact at
+ * any aspect ratio. Phones and tablets recompose in flow.
+ *
+ * The boundary is x(y) = x_top − 0.953·y. `--breach` (0 → 1) advances it
+ * across the hero; the territory, its dot field and the thin parallel line
+ * read the same variables, so they always agree.
+ *
+ * Set on the element by <Hero>: --lines, --words, --longest-word.
+ */
+.hero {
+  --breach: 0;
+  --hero-h: max(100svh, 40rem);
+  /* Phone/tablet: the boundary passes through an anchor on the last word,
+     measured by <HeroStage>; these are the server-rendered estimates. */
+  --anchor-x: 70%;
+  --anchor-y: 58%;
+  --x-top0: calc(var(--anchor-x) + 0.953 * var(--anchor-y));
+  --x-top: calc(var(--x-top0) - var(--breach) * (var(--x-top0) + 2px));
+  --x-bot: calc(var(--x-top) - 0.953 * var(--hero-h));
+  /*
+   * Through the last word, the boundary can reach the header's line on wide,
+   * squarer screens. At rest the territory starts at the header's rule, so
+   * the header always sits on paper; the cut lifts as the breach begins (the
+   * header has hidden by then). The desktop stage needs no cut.
+   */
+  --cut: calc(var(--header-height) * (1 - clamp(0, var(--breach) * 4, 1)));
+
+  position: relative;
+  height: var(--hero-h);
+  overflow: clip;
+  background: var(--paper);
+}
+
+/* Each layer resolves its own tone (the ink copy sets data-tone="ink"). */
+.pinWrap {
+  position: relative;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  color: var(--fore);
+}
+
+/* Ink territory: black field, dots and the paper-on-ink copy, clipped by the boundary. */
+/* Purely visual: taps and clicks pass through to the paper layer's links. */
+.territory {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--ink);
+  clip-path: polygon(
+    calc(var(--x-top) - 0.953 * var(--cut)) var(--cut),
+    max(100%, var(--x-top)) var(--cut),
+    max(100%, var(--x-top)) 100%,
+    var(--x-bot) 100%
+  );
+}
+
+.territory .layer {
+  user-select: none;
+}
+
+/*
+ * Entrance. The text is animated in CSS so it paints at once, before
+ * hydration: lines rise through a clip, then the details follow. Both copies
+ * (paper and ink) carry the same --line-index / --enter-index, so they stay
+ * in step. Until the motion hook takes over (data-ready), the boundary waits
+ * off-screen; it then forms in JavaScript, where the dot field follows it. A
+ * 3s fail-safe settles the boundary if hydration never happens.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :global(:root[data-js]) .hero:not([data-ready]) {
+    --breach: -0.45;
+    animation: settle 0s 3s forwards;
+  }
+
+  .hero .titleLine {
+    animation: line-rise 1.15s var(--ease-out) both;
+    animation-delay: calc(0.12s + var(--line-index, 0) * 0.09s);
+  }
+
+  .hero [data-enter] {
+    animation: detail-rise 0.9s var(--ease-out) both;
+    animation-delay: calc(0.45s + var(--enter-index, 0) * 0.06s);
+  }
+
+  .hero [data-enter-rule] {
+    animation: rule-draw 0.9s var(--ease-in-out) both;
+    animation-delay: calc(0.5s + var(--enter-index, 0) * 0.05s);
+  }
+}
+
+@keyframes settle {
+  to {
+    --breach: 0;
+  }
+}
+
+@keyframes line-rise {
+  from {
+    clip-path: inset(100% -10% 0% -10%);
+    translate: 0 38%;
+  }
+  to {
+    clip-path: inset(-40% -10% -40% -10%);
+    translate: 0 0;
+  }
+}
+
+@keyframes detail-rise {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Drawn along the element's own length (individual scale composes before rotate's frame). */
+@keyframes rule-draw {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+/* Hidden probes: report CSS geometry (grid origin, unit, boundary top) to the canvas. */
+.gridProbe,
+.lineProbe {
+  position: absolute;
+  top: 0;
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gridProbe {
+  left: calc(var(--stage-x, 0px) + 7 * var(--u));
+  top: calc(10 * var(--u));
+  width: calc(1000 * var(--u));
+}
+
+.lineProbe {
+  left: var(--x-top0);
+  width: 0;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Phone / tablet: flow composition ---------- */
+
+.composition {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: calc(var(--header-height) + 1.25rem) var(--margin-x) calc(1.5rem + env(safe-area-inset-bottom));
+  container-type: inline-size;
+}
+
+.spine {
+  display: none;
+}
+
+.label {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.35rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.labelSquare {
+  width: 0.75em;
+  height: 0.75em;
+  background: currentColor;
+}
+
+.labelText {
+  grid-column: 2;
+}
+
+.labelSub {
+  grid-column: 2;
+  grid-row: 2;
+  color: var(--fore-muted);
+}
+
+.connector {
+  transform-origin: left center;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  width: 4rem;
+  height: auto;
+  overflow: visible;
+}
+
+/* One word per line, sized so the longest word fits the column. */
+.title {
+  margin-top: auto;
+  font-size: min(
+    100cqw / (var(--longest-word) * 0.56),
+    (100svh - 24rem) / (var(--words) * 0.84),
+    9rem
+  );
+  font-weight: 700;
+  line-height: 0.84;
+  letter-spacing: var(--tracking-display);
+  margin-left: -0.05em;
+}
+
+.titleLine,
+.word {
+  display: block;
+  white-space: nowrap;
+}
+
+.summary {
+  margin-top: 1.5rem;
+  max-width: 21rem;
+}
+
+.summaryText {
+  font-size: var(--step-lead);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  margin-top: 1.5rem;
+}
+
+.cta {
+  align-self: flex-start;
+  margin-top: 1.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.boundaryLine {
+  display: none;
+}
+
+/* ---------- Desktop stage: reference geometry ---------- */
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  /* The reference line passes through (1722.85u, 0) in stage coordinates. */
+  .hero {
+    --hero-h: 100svh;
+    --x-top0: calc(var(--stage-x) + 1722.85 * var(--u) + 0.953 * var(--stage-y));
+    --cut: 0px;
+  }
+
+  .composition {
+    display: block;
+    padding: 0;
+    container-type: normal;
+  }
+
+  .composition > * {
+    position: absolute;
+  }
+
+  /*
+   * Spine at x = 48u, top to bottom: rule 0–98v (behind the header), gap,
+   * rule from 144v, label, square, rule, hatch, rule to the bottom.
+   */
+  .spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: calc(var(--stage-x) + 40 * var(--u));
+    top: 0;
+    bottom: 0;
+    width: calc(16 * var(--u));
+  }
+
+  .spineRule {
+    width: max(1px, calc(1.5 * var(--u)));
+    background: var(--line);
+  }
+
+  .spineRule[data-segment="header"] {
+    height: calc(98 * var(--u));
+    margin-bottom: calc(46 * var(--u) + var(--stage-y));
+  }
+
+  .spineRule[data-segment="upper"] {
+    height: calc(394 * var(--u));
+  }
+
+  /* Physical margins: in vertical writing, margin-block would be horizontal. */
+  .spineText {
+    margin: calc(15 * var(--u)) 0 calc(12 * var(--u));
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    font-family: var(--font-mono);
+    font-size: calc(17 * var(--u));
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .spineSquare {
+    width: calc(13 * var(--u));
+    height: calc(14 * var(--u));
+    background: currentColor;
+  }
+
+  .spineRule[data-segment="lower"] {
+    height: calc(67 * var(--u));
+    margin-top: calc(17 * var(--u));
+  }
+
+  .spineHatch {
+    width: calc(16 * var(--u));
+    height: calc(50 * var(--u));
+    flex: none;
+  }
+
+  .spineRule[data-segment="foot"] {
+    flex: 1;
+  }
+
+  /* Label: square at (142, 156), text at x 173, connector from x 389. */
+  .label {
+    left: calc(var(--stage-x) + 142 * var(--u));
+    top: calc(var(--stage-y) + 156 * var(--u));
+    grid-template-columns: calc(16 * var(--u)) auto;
+    column-gap: calc(15 * var(--u));
+    row-gap: calc(10 * var(--u));
+    font-size: calc(19 * var(--u));
+  }
+
+  .labelSquare {
+    width: calc(16 * var(--u));
+    height: calc(16 * var(--u));
+  }
+
+  .labelSub {
+    font-size: calc(18.5 * var(--u));
+  }
+
+  /* grid-area: auto, so the label's box (not an implicit grid track) contains it. */
+  .connector {
+    position: absolute;
+    grid-area: auto;
+    max-width: none;
+    left: calc(247 * var(--u));
+    top: calc(7 * var(--u));
+    width: calc(139 * var(--u));
+  }
+
+  /*
+   * Headline: 177u type on 136u leading, cap top of the first line at y 237.
+   * Host Grotesk metrics (ascent 1.015, descent 0.315, cap 0.700) put the cap
+   * top 0.034em below the line-box top at this leading, hence the vertical
+   * shift. Shifting left by the 0.051em side bearing of B/M/H/L puts straight
+   * stems on x 148 and lets round and diagonal capitals overshoot, as the
+   * reference does.
+   */
+  .title {
+    left: calc(var(--stage-x) + 148 * var(--u));
+    top: calc(var(--stage-y) + 237 * var(--u));
+    margin: 0;
+    font-size: calc(177 * var(--u));
+    line-height: calc(136 * var(--u));
+    translate: -0.051em -0.034em;
+  }
+
+  .titleLine {
+    white-space: nowrap;
+  }
+
+  .word {
+    display: inline;
+  }
+
+  /* Summary: bracket at x 948 from y 175, text at x 988. */
+  .summary {
+    left: calc(var(--stage-x) + 948 * var(--u));
+    top: calc(var(--stage-y) + 175 * var(--u));
+    margin: 0;
+    max-width: none;
+    padding: calc(19 * var(--u)) 0 0 calc(40 * var(--u));
+    border-left: max(1px, calc(1.6 * var(--u))) solid currentColor;
+  }
+
+  .summary::before,
+  .summary::after {
+    content: "";
+    display: block;
+    background: currentColor;
+  }
+
+  .summary::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(15 * var(--u));
+    height: max(1px, calc(1.6 * var(--u)));
+  }
+
+  .summary::after {
+    width: calc(40 * var(--u));
+    height: calc(2.4 * var(--u));
+    margin-top: calc(38 * var(--u));
+  }
+
+  .summaryText {
+    width: calc(300 * var(--u));
+    font-size: calc(25 * var(--u));
+    line-height: calc(31 * var(--u));
+  }
+
+  /* Meta: labels at y 727, first column at x 147. */
+  .meta {
+    --meta-label: max(13px, calc(14 * var(--u)));
+    --meta-value: calc(17.5 * var(--u));
+    --meta-gap-before: calc(28 * var(--u));
+    --meta-gap-after: calc(38 * var(--u));
+    --meta-row-gap: calc(12 * var(--u));
+
+    left: calc(var(--stage-x) + 147 * var(--u));
+    top: calc(var(--stage-y) + 727 * var(--u));
+    margin: 0;
+  }
+
+  /* CTA: opening bracket at (147, 828). */
+  .cta {
+    --ba-size: calc(23 * var(--u));
+
+    left: calc(var(--stage-x) + 147 * var(--u));
+    top: calc(var(--stage-y) + 828 * var(--u));
+    margin: 0;
+  }
+
+  /*
+   * Thin parallel line 14u outside the boundary on the paper side, broken
+   * around the headline's last line. Each segment is a bar rotated to the
+   * boundary direction (133.6° from +x) starting on the line at y0.
+   */
+  .boundaryLine {
+    display: block;
+    position: absolute;
+    left: calc(var(--x-top) - 14 * var(--u) - 0.953 * var(--y0));
+    top: var(--y0);
+    width: calc((var(--y1) - var(--y0)) * 1.3814);
+    height: max(1px, calc(1.6 * var(--u)));
+    background: var(--ink);
+    transform-origin: 0 0;
+    rotate: 133.6deg;
+    pointer-events: none;
+  }
+
+  /* Reference: the line breaks from y 530 to y 663 around the last headline line (cap top 509). */
+  .boundaryLine[data-segment="upper"] {
+    --y0: calc(var(--stage-y) + 240 * var(--u));
+    --y1: calc(var(--stage-y) + (237 + (var(--lines) - 1) * 136 + 21) * var(--u));
+  }
+
+  .boundaryLine[data-segment="lower"] {
+    --y0: calc(var(--stage-y) + (237 + (var(--lines) - 1) * 136 + 154) * var(--u));
+    --y1: var(--hero-h);
+  }
+}

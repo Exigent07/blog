@@ -1,0 +1,141 @@
+/*
+ * Paper section: the heading and the author's thesis, the four moves in four
+ * columns (the run-in is our framing, the quote is the author's), then the instrument.
+ */
+.section {
+  position: relative;
+  background: var(--ground);
+  color: var(--fore);
+  padding: calc(var(--section-gap) * 0.55) var(--margin-right) var(--section-gap) var(--margin-x);
+}
+
+.intro {
+  display: grid;
+  gap: 2rem;
+}
+
+.heading {
+  font-size: var(--step-head);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-head);
+}
+
+.thesis {
+  margin: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Statement size: a paragraph, not a headline. */
+.thesisQuote {
+  margin: 0;
+  font-size: clamp(1.375rem, 1rem + 1.4vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  max-width: 26ch;
+}
+
+.thesisQuote p::before {
+  content: "\201C";
+}
+
+.thesisQuote p::after {
+  content: "\201D";
+}
+
+.caption {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.source {
+  color: inherit;
+  text-decoration-color: var(--line);
+  transition: color var(--dur-micro) linear, text-decoration-color var(--dur-micro) linear;
+}
+
+.source:hover {
+  color: var(--fore);
+  text-decoration-color: currentColor;
+}
+
+.source::before {
+  content: "From ";
+}
+
+.moves {
+  display: grid;
+  gap: 2.5rem;
+  margin: calc(var(--section-gap) * 0.55) 0 0;
+  padding: 0;
+}
+
+.move {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+  padding-top: 1.25rem;
+  border-top: 1.5px solid var(--fore);
+}
+
+.moveTitle {
+  font-size: var(--step-body);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.moveFigure {
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.moveFigure blockquote {
+  margin: 0;
+}
+
+.moveFigure p::before {
+  content: "\201C";
+}
+
+.moveFigure p::after {
+  content: "\201D";
+}
+
+@media (min-width: 48rem) {
+  .moves {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+}
+
+@media (min-width: 64rem) {
+  .intro {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: end;
+  }
+
+  .heading {
+    grid-column: 1 / span 6;
+  }
+
+  .thesis {
+    grid-column: 7 / span 6;
+  }
+
+  .moves {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source {
+    transition: none;
+  }
+}

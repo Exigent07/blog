@@ -1,0 +1,97 @@
+/*
+ * Censored text: a solid bar in the surface's foreground (ink on paper, paper
+ * on ink and in code), about as wide as what it hides. On hover the boundary
+ * (a hairline at 46.4°) crosses it; behind the line the bar shows glyphs that
+ * Redaction.tsx scrambles and settles into "//REDACTED//".
+ */
+@property --crossed {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+.redaction {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--chars) * 1ch);
+  height: 1.2em;
+  overflow: hidden;
+  vertical-align: -0.24em;
+  background: var(--fore);
+  color: var(--ground);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-weight: 600;
+  line-height: 1.2em;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
+/* Inside highlighted code the bar is set at the code's own size. */
+.redaction[data-context="code"] {
+  font-size: 1em;
+  height: 1.3em;
+  line-height: 1.3em;
+  vertical-align: -0.3em;
+}
+
+.glyphs {
+  position: absolute;
+  inset: 0;
+  display: block;
+  text-align: left;
+  opacity: 0;
+  transition: opacity var(--dur-micro) linear;
+  /* Only the part the boundary has crossed shows its glyphs. */
+  mask-image: linear-gradient(133.6deg, #000 var(--crossed), transparent var(--crossed));
+}
+
+/* The boundary itself, riding the crossed edge. */
+.redaction::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    133.6deg,
+    transparent calc(var(--crossed) - 1.5px),
+    var(--ground) calc(var(--crossed) - 1.5px) var(--crossed),
+    transparent var(--crossed)
+  );
+  pointer-events: none;
+}
+
+.redaction[data-state="open"] {
+  animation: cross 560ms var(--ease-in-out) both;
+}
+
+.redaction[data-state="open"] .glyphs {
+  opacity: 1;
+  transition: none;
+}
+
+/* Leaving: the glyphs fade out of a fully crossed bar, and the line does not run back. */
+.redaction[data-state="closed"] {
+  --crossed: 100%;
+}
+
+@keyframes cross {
+  from {
+    --crossed: 0%;
+  }
+  to {
+    --crossed: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .redaction[data-state="open"] {
+    --crossed: 100%;
+
+    animation: none;
+  }
+
+  .glyphs {
+    transition: none;
+  }
+}

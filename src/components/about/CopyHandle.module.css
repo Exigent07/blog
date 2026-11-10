@@ -1,0 +1,35 @@
+.copy {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  column-gap: 1.5rem;
+  row-gap: 0.5rem;
+}
+
+.handle {
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: inherit;
+}
+
+/* Reserves its line, so the layout does not move when a message appears. */
+.status {
+  grid-column: 1 / -1;
+  min-height: 1.2em;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}

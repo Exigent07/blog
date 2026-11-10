@@ -1,0 +1,95 @@
+/*
+ * Route transitions (React <ViewTransition>, see docs/DESIGN.md §5).
+ * Baseline rules from the Next.js view transitions guide.
+ */
+
+/* Clicks during a transition reach the live page. */
+::view-transition {
+  pointer-events: none;
+}
+
+/*
+ * The header is the fixed reference point: it never animates, and it stays
+ * above the wipe. Named here, in global CSS: inside a CSS Module the ident
+ * would be renamed and these rules would never match it.
+ */
+header[data-chrome] {
+  view-transition-name: site-header;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/*
+ * The progress slider is its own layer, between the old page and the new:
+ * the wipe covers it as it passes. Its new state is hidden (ScrollProgress
+ * hides it for the route change and wipes it back in once the page is in).
+ */
+[data-progress] {
+  view-transition-name: site-progress;
+}
+
+::view-transition-group(site-progress) {
+  animation: none;
+  z-index: 2;
+}
+
+::view-transition-old(site-progress),
+::view-transition-new(site-progress) {
+  animation: none;
+}
+
+/*
+ * The boundary wipe. The new page is revealed by the region right of a
+ * 46.4° line whose top travels from beyond the right edge (the line meets
+ * y = 100vh at x = 100vw) to the top-left corner. Coordinates use viewport
+ * units because a page snapshot can be much taller than the viewport.
+ */
+::view-transition-group(.boundary-enter) {
+  z-index: 3;
+}
+
+::view-transition-group(.boundary-exit) {
+  z-index: 1;
+}
+
+::view-transition-new(.boundary-enter) {
+  animation: boundary-enter var(--dur-long) var(--ease-in-out) both;
+}
+
+::view-transition-old(.boundary-exit) {
+  animation: none;
+}
+
+@keyframes boundary-enter {
+  from {
+    clip-path: polygon(
+      calc(100vw + 95.3vh) 0,
+      300vw 0,
+      300vw 200vh,
+      calc(100vw + 95.3vh - 190.6vh) 200vh
+    );
+  }
+  to {
+    clip-path: polygon(0 0, 300vw 0, 300vw 200vh, -190.6vh 200vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

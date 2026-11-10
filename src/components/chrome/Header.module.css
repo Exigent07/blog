@@ -1,0 +1,214 @@
+/*
+ * Header. On the desktop stage every coordinate comes from the reference
+ * (docs/DESIGN.md §4): logo at 101u, labels at 20u Plex Mono with 90u gaps,
+ * divider 80u after the last label, search icon ending 90u from the right,
+ * rule at y = 98u.
+ */
+.header {
+  --nav-size: 0.8125rem;
+  --nav-gap: 2.25rem;
+  --marker-w: 5.5rem;
+  --marker-h: 0.75rem;
+  --icon: 1.375rem;
+
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: var(--header-height);
+  color: var(--fore);
+  /* Its view-transition-name is set in src/styles/view-transitions.css (CSS Modules would rename it). */
+  transition:
+    transform var(--dur-medium) var(--ease-out),
+    background-color var(--dur-micro) linear,
+    color var(--dur-micro) linear;
+}
+
+/* Shown on scroll up, or brought back by keyboard focus: either way it needs its own ground. */
+.header[data-state="shown"],
+.header[data-state="hidden"]:focus-within {
+  background: var(--ground);
+}
+
+.header[data-state="hidden"]:not(:focus-within) {
+  transform: translateY(-100%);
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: var(--margin-x) var(--margin-right);
+}
+
+.logo {
+  margin-right: auto;
+}
+
+.nav {
+  position: relative;
+  display: none;
+}
+
+.list {
+  display: flex;
+  gap: var(--nav-gap);
+}
+
+.link {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--nav-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-block: 0.75rem;
+  margin-block: -0.75rem;
+}
+
+.link:focus-visible {
+  outline-offset: 6px;
+}
+
+/* Centre of the target label: (chars × advance) + (gaps × gap), minus half the motif. */
+.marker {
+  --advance: calc(var(--nav-size) * 0.62);
+
+  position: absolute;
+  top: calc(100% + var(--marker-h) * 0.3);
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  width: var(--marker-w);
+  height: var(--marker-h);
+  pointer-events: none;
+  translate: calc(var(--marker-chars, 0) * var(--advance) + var(--marker-gaps, 0) * var(--nav-gap) - var(--marker-w) / 2)
+    0;
+  opacity: 0;
+  transition:
+    translate var(--dur-short) var(--ease-out),
+    opacity var(--dur-micro) linear;
+}
+
+.marker[data-visible="true"] {
+  opacity: 1;
+}
+
+.markerSlashes {
+  height: 100%;
+  width: auto;
+  flex: none;
+}
+
+.markerLine {
+  flex: 1;
+  height: max(1.5px, calc(var(--marker-h) * 0.18));
+  margin-left: calc(var(--marker-h) * -0.05);
+  margin-bottom: calc(var(--marker-h) * 0.38);
+  background: currentColor;
+}
+
+.divider {
+  display: none;
+  width: 1.5px;
+  height: calc(var(--icon) * 0.8);
+  background: var(--line);
+}
+
+.search {
+  display: grid;
+  place-items: center;
+  width: calc(var(--icon) + 1rem);
+  height: calc(var(--icon) + 1rem);
+  margin: -0.5rem;
+  margin-left: 0.5rem;
+}
+
+.searchIcon {
+  width: var(--icon);
+  height: var(--icon);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .search:hover .searchIcon {
+    transform: rotate(-12deg) scale(1.06);
+  }
+}
+
+.rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  transform-origin: left;
+}
+
+/* Tablet: the navigation fits inline. */
+@media (min-width: 40rem) {
+  .nav {
+    display: block;
+  }
+
+  .divider {
+    display: block;
+    margin-inline: 2rem 1.25rem;
+  }
+}
+
+/* Desktop stage: reference geometry. */
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .header {
+    --nav-size: calc(20 * var(--u));
+    --nav-gap: calc(90 * var(--u));
+    --marker-w: calc(124 * var(--u));
+    --marker-h: calc(15 * var(--u));
+    --icon: calc(34 * var(--u));
+  }
+
+  .inner {
+    padding-left: calc(var(--stage-x) + 101 * var(--u));
+    padding-right: calc(var(--stage-x) + 90 * var(--u));
+  }
+
+  .nav {
+    translate: 0 calc(-2 * var(--u));
+  }
+
+  .marker {
+    top: calc(100% + 4 * var(--u));
+  }
+
+  .divider {
+    width: max(1px, calc(1.5 * var(--u)));
+    height: calc(27 * var(--u));
+    margin-inline: calc(80 * var(--u)) calc(73 * var(--u));
+  }
+
+  .search {
+    width: var(--icon);
+    height: var(--icon);
+    margin: 0;
+  }
+
+  /*
+   * Home, at the top: the rule stops 40u short of the hero boundary, which
+   * meets the rule's height (98u) at x = 1722.85u − 0.953 × 98u.
+   */
+  .header[data-route="home"][data-state="top"] .rule {
+    right: calc(100% - var(--stage-x) - (1722.85 - 0.953 * 98 - 40) * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .marker,
+  .searchIcon {
+    transition: none;
+  }
+}

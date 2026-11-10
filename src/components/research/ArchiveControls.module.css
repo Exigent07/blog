@@ -1,0 +1,261 @@
+.controls {
+  margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+}
+
+.bar {
+  display: grid;
+  row-gap: 1.75rem;
+}
+
+/* Without JavaScript the archive is complete but cannot filter. */
+:global(:root:not([data-js])) .bar {
+  display: none;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+/* ---------- Topic toggles ---------- */
+
+.topics {
+  display: grid;
+  row-gap: 0.5rem;
+  min-width: 0;
+}
+
+/*
+ * Phones and tablets: the row scrolls sideways from edge to edge of the
+ * screen, aligned with the content at rest. The block padding keeps focus
+ * rings clear of the scroll container's clipping edge.
+ */
+.scroller {
+  margin: -0.375rem calc(var(--margin-right) * -1) -0.375rem calc(var(--margin-x) * -1);
+  padding: 0.375rem var(--margin-right) 0.375rem var(--margin-x);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--margin-x) var(--margin-right);
+}
+
+.topicList {
+  display: flex;
+  gap: clamp(1.25rem, 0.75rem + 1.5vw, 2.25rem);
+  width: max-content;
+}
+
+.topic {
+  --marker-h: 0.6875rem;
+
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55em;
+  min-height: 2.75rem;
+  padding-block: 0.625rem calc(var(--marker-h) + 0.5rem);
+  font-family: var(--font-mono);
+  font-size: var(--step-data);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.topic:disabled {
+  cursor: default;
+  color: inherit;
+}
+
+.count {
+  font-weight: 500;
+  color: var(--fore-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* //──── under the pressed topic; hovering another previews the slashes. */
+.marker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.125rem;
+  display: flex;
+  align-items: flex-end;
+  height: var(--marker-h);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-short) var(--ease-out);
+}
+
+.markerSlashes {
+  flex: none;
+  width: auto;
+  height: 100%;
+}
+
+.markerLine {
+  flex: 1;
+  height: max(1.5px, calc(var(--marker-h) * 0.18));
+  margin-left: calc(var(--marker-h) * -0.05);
+  margin-bottom: calc(var(--marker-h) * 0.38);
+  background: currentColor;
+}
+
+.topic[aria-pressed="true"] .marker {
+  clip-path: inset(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .topic:not([aria-pressed="true"], :disabled):hover .marker {
+    /* The slash mark is 44 × 31 units: show it alone. */
+    clip-path: inset(0 calc(100% - var(--marker-h) * 44 / 31) 0 0);
+  }
+}
+
+/* ---------- Search ---------- */
+
+.search {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 1rem;
+  max-width: 34rem;
+}
+
+.field {
+  display: grid;
+  row-gap: 0.5rem;
+  min-width: 0;
+}
+
+.input {
+  appearance: none;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0 0.625rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fore);
+  font-family: var(--font-mono);
+  /* 16px or more: iOS zooms into smaller inputs on focus. */
+  font-size: max(1rem, var(--step-data));
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.input::placeholder {
+  color: var(--fore-muted);
+  opacity: 1;
+}
+
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  appearance: none;
+}
+
+.input:disabled {
+  opacity: 1;
+  color: var(--fore);
+  -webkit-text-fill-color: currentColor;
+}
+
+.clear {
+  --ba-size: var(--step-label);
+
+  min-height: 2.75rem;
+  padding-bottom: 0.25rem;
+  visibility: hidden;
+}
+
+.clear[data-visible="true"] {
+  visibility: visible;
+}
+
+/* The field's hairline; focus draws an ink line across it. */
+.underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
+
+.underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--fore);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.search:focus-within .underline::after {
+  transform: none;
+}
+
+/* One focus frame around the whole field, rather than a box on the bare input. */
+.search:has(:focus-visible) {
+  outline: 2px solid var(--fore);
+  outline-offset: 0.75rem;
+}
+
+.search :focus-visible {
+  outline: none;
+}
+
+.status {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Wide: topics on the index's left columns, search on its right ---------- */
+
+@container research-archive (min-width: 66rem) {
+  .bar {
+    grid-template-columns: var(--archive-columns);
+    column-gap: var(--archive-gap);
+    align-items: start;
+  }
+
+  .topics {
+    grid-column: date-start / title-end;
+  }
+
+  .scroller {
+    margin-inline: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
+
+  .search {
+    grid-column: topic-start / time-end;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker,
+  .underline::after {
+    transition: none;
+  }
+}

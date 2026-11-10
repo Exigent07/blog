@@ -1,0 +1,8 @@
+/*
+ * The page as one opaque surface (see PageTransition.tsx). At least a screen
+ * tall, so a short page still covers the old one while the wipe passes.
+ */
+.page {
+  min-height: 100svh;
+  background: var(--ground);
+}

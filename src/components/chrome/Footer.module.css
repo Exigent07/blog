@@ -1,0 +1,238 @@
+/*
+ * The footer: columns above, the monumental mark below. On the desktop stage
+ * it is sticky beneath <main>, so the page slides away to uncover it.
+ */
+.footer {
+  position: relative;
+  z-index: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  min-height: 100svh;
+  padding: calc(var(--header-height) + 2.5rem) var(--margin-right) calc(1.25rem + env(safe-area-inset-bottom))
+    var(--margin-x);
+  background: var(--ground);
+  color: var(--fore);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem var(--gutter);
+}
+
+.column {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.heading {
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.list {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+}
+
+.link {
+  position: relative;
+  display: inline-block;
+  padding-block: 0.3rem;
+  font-size: var(--step-body);
+  line-height: 1.35;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The rule draws in from the left on hover and focus. */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.2rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.contact {
+  grid-column: 1 / -1;
+  container-type: inline-size;
+}
+
+/* Sized by its column: the address is about 10.9em wide, so it fits on one line at any width. */
+.email {
+  font-size: min(2.75rem, 100cqi / 11.2);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: var(--tracking-head);
+  color: inherit;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * The mark: two parallelograms in the logo's proportions (bar 9.5, lean 16.5,
+ * pitch 18, height 31), joined into one polygon by a zero-area bridge along
+ * the bottom edge so a single clip-path can draw both. --bars-in slides them
+ * in from the right; --bars-push follows a fine pointer.
+ */
+.mark {
+  /* Height follows the screen, capped at the desktop proportion to the width (342 : 1235). */
+  --mh: min(clamp(11rem, 38svh, 27rem), (100vw - var(--margin-x) - var(--margin-right)) * 0.28);
+  --bars-in: 0;
+  --bars-push: 0;
+  --bw: calc(var(--mh) * 9.5 / 31);
+  --bl: calc(var(--mh) * 16.5 / 31);
+  --bp: calc(var(--mh) * 18 / 31);
+  /* Both bars (44/31 of the height wide) always land inside the mark. */
+  --x0: calc(min(56%, 100% - var(--mh) * 44 / 31) + var(--bars-in) * 75vw + var(--bars-push) * 3vw);
+  --bars: polygon(
+    var(--x0) 100%,
+    calc(var(--x0) + var(--bl)) 0,
+    calc(var(--x0) + var(--bl) + var(--bw)) 0,
+    calc(var(--x0) + var(--bw)) 100%,
+    calc(var(--x0) + var(--bp)) 100%,
+    calc(var(--x0) + var(--bp) + var(--bl)) 0,
+    calc(var(--x0) + var(--bp) + var(--bl) + var(--bw)) 0,
+    calc(var(--x0) + var(--bp) + var(--bw)) 100%
+  );
+
+  position: relative;
+  height: var(--mh);
+  margin-top: 3rem;
+  container-type: inline-size;
+}
+
+.bars {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  clip-path: var(--bars);
+}
+
+/* Each wordmark layer fills the mark so its clip shares the bars' coordinates. */
+.wordmark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  color: var(--paper);
+  font-size: calc(100cqw / 4.3);
+  font-weight: 700;
+  line-height: 0.74;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+.wordmark[data-layer="ink"] {
+  color: var(--ink);
+  clip-path: var(--bars);
+}
+
+.wordmark > span {
+  display: block;
+  transform-origin: 0 100%;
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fore-muted);
+}
+
+.backToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  color: var(--fore);
+  font-family: var(--font-mono);
+  font-size: var(--step-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.backMark {
+  height: 0.8em;
+  width: auto;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.backToTop:hover .backMark,
+.backToTop:focus-visible .backMark {
+  transform: translateY(-0.35em);
+}
+
+/* Tablets: three lists in a row, the address beneath them at full width. */
+@media (min-width: 48rem) {
+  .columns {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .column {
+    grid-column: span 4;
+  }
+
+  .contact {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .column {
+    grid-column: span 3;
+  }
+
+  .column:first-child {
+    grid-column: span 2;
+  }
+
+  .contact {
+    grid-column: span 4;
+  }
+}
+
+@media (min-width: 64rem) and (min-aspect-ratio: 7/5) {
+  .footer {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link::after,
+  .backMark {
+    transition: none;
+  }
+}

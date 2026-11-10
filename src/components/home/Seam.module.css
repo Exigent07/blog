@@ -1,0 +1,40 @@
+/*
+ * Paper occupies the region left of a 46.4° line whose top runs from the
+ * band's left edge (--seam 0: all ink) to beyond its right edge (--seam 1:
+ * all paper). Reduced motion leaves it half-way: a static diagonal split.
+ */
+.seam {
+  --seam: 0.5;
+  --h: clamp(16rem, 52svh, 34rem);
+  --x: calc(var(--seam) * (100% + 0.953 * var(--h)));
+
+  position: relative;
+  height: var(--h);
+  overflow: clip;
+  background: var(--ink);
+}
+
+.paper {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  clip-path: polygon(0 0, var(--x) 0, calc(var(--x) - 0.953 * var(--h)) 100%, 0 100%);
+}
+
+/* A hairline 10px inside the ink, riding the edge. */
+.edge {
+  position: absolute;
+  top: 0;
+  left: calc(var(--x) + 10px);
+  width: calc(var(--h) * 1.3814);
+  height: 1.5px;
+  background: var(--paper);
+  transform-origin: 0 0;
+  rotate: 133.6deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .seam {
+    --seam: 0;
+  }
+}

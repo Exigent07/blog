@@ -1,0 +1,6 @@
+@layer reset, tokens, base, utilities;
+
+@import "lenis/dist/lenis.css";
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+@import "../styles/view-transitions.css";
